@@ -1,0 +1,77 @@
+###############################################################################
+#                          FLUTTER / DART / PUB                              #
+###############################################################################
+
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub/
+.pub-cache/
+.melos_tool/
+
+**/doc/api/
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+**/android/app/build/
+**/build/
+
+# Fichiers symboles et obfuscation
+app.*.symbols
+app.*.map.json
+
+
+###############################################################################
+#                               ANDROID                                      #
+###############################################################################
+
+android/.gradle/
+android/captures/
+android/app/build/
+
+
+###############################################################################
+#                          IDE / CONFIGURATION                               #
+###############################################################################
+
+# Android Studio / IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# VS Code (décommente si tu ne veux pas versionner la config locale)
+#.vscode/
+
+# Fichiers temporaires, système ou backup
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+*.tmp
+*.bak
+*.old
+*.orig
+
+
+###############################################################################
+#                             PACKAGE LOCK FILE                              #
+###############################################################################
+
+# Garde pubspec.lock car c'est une application (important !)
+# NE PAS l'ignorer dans une app
+#pubspec.lock
+
+
+###############################################################################
+#                         FIREBASE (si utilisé)                              #
+###############################################################################
+
+firebase_app_id_file.json
