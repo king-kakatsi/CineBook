@@ -9,7 +9,7 @@ enum Mediatype {
 
 // @@@@@@@@@@@@@@@@@@ MEDIA CLASS @@@@@@@@@@@@@@@@@@@@@
 
-abstract class Media {
+class Media {
     // %%%%%%%%%%%%%%%%%% PROPERTIES %%%%%%%%%%%%%%%%%%%%%
     final String uniqueId;
     final Mediatype mediaType;
@@ -40,7 +40,7 @@ abstract class Media {
 
 // @@@@@@@@@@@@@@@@@@ SEASON CLASS @@@@@@@@@@@@@@@@@@@@@
 
-abstract class Season {
+class Season {
     // %%%%%%%%%%%%%%%%%% PROPERTIES %%%%%%%%%%%%%%%%%%%%%
     final String uniqueId;
     final int index;

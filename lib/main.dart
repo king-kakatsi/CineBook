@@ -1,4 +1,5 @@
 
+import 'package:first_project/core/themes/app_theme.dart';
 import 'package:first_project/views/home_page/home_page.dart';
 import 'package:first_project/views/home_page/widgets/media_list/media_list_viewModel.dart';
 import 'package:flutter/material.dart';
@@ -34,9 +35,9 @@ class MyApp extends StatelessWidget {
             child: MaterialApp(
                 debugShowCheckedModeBanner: false,
                 title: 'CineBook App',
-                theme: ThemeData(
-                    colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-                ),
+                theme: AppTheme.lightTheme,
+                darkTheme: AppTheme.darkTheme,
+                themeMode: ThemeMode.dark,
                 home: const HomePage(title: 'CineBook'),
             ),
         );
