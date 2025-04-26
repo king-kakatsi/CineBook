@@ -63,6 +63,16 @@ class HomePageState extends State<HomePage> {
 
 
 
+
+    // %%%%%%%%%%%%%%%%% ON MENU PRESSED %%%%%%%%%%%%%%%%%%%%
+    void onMenuPressed () {
+        
+    }
+    // %%%%%%%%%%%%%%%%% END - ON MENU PRESSED %%%%%%%%%%%%%%%%%%%%
+
+
+
+
     // %%%%%%%%%%%%%%%%%%%% BUILD %%%%%%%%%%%%%%%%%%%%
     @override
     Widget build(BuildContext context) {
@@ -70,8 +80,18 @@ class HomePageState extends State<HomePage> {
         return Scaffold(
             // ooooooooooooo APP BAR ooooooooooooooooo
             appBar: AppBar(
-                backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-                title: Text(widget.title),
+                title: Text(
+                    widget.title,
+                    style: Theme.of(context).textTheme.headlineLarge,
+                ),
+
+                actions: [
+                    IconButton(
+                        onPressed: onMenuPressed, 
+                        icon: Icon(Icons.menu),
+                    ),
+                    
+                ],
             ),
             // ooooooooooooo END - APP BAR ooooooooooooooooo
 
@@ -85,7 +105,7 @@ class HomePageState extends State<HomePage> {
 
             // oooooooooooooooooo BOTTOM NAVIGATION BAR ooooooooooooooo
             bottomNavigationBar: BottomNavigationBar(
-
+                
                 currentIndex: selectedPageIndex,
                 onTap: (int index) => onTabTapped(index),
 
@@ -103,9 +123,10 @@ class HomePageState extends State<HomePage> {
                         icon: Icon(Icons.book),
                         label: "Animes"
                     )
-                ]
+                ],
                 // ::-----::::::::--:: END - PAGES ::-----::::::::--::
 
+                backgroundColor: Theme.of(context).colorScheme.primary,
             ),
             // oooooooooooooooooo END - BOTTOM NAVIGATION BAR ooooooooooooooo
         );

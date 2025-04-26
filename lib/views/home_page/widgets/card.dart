@@ -1,3 +1,4 @@
+import 'package:first_project/core/themes/color_palette.dart';
 import 'package:first_project/models/media.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +14,7 @@ class MediaCard extends StatefulWidget {
 
 
     // %%%%%%%%%%%%%%%%%%%% CONSTRUCTOR %%%%%%%%%%%%%%%%%%%%
-    MediaCard({
+    const MediaCard({
         
         super.key, 
         required this.media
@@ -67,10 +68,6 @@ class MediaCardState extends State<MediaCard> {
     
     
         return Card(
-
-            shape: RoundedRectangleBorder( borderRadius: BorderRadius.circular(15)),
-            margin: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-
             child: Padding(
 
                 padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -95,17 +92,13 @@ class MediaCardState extends State<MediaCard> {
                         
                         // oooooooooooooo TITLE ooooooooooooooooooo
                         Text(
-                            widget.media.title,
-                            
-                            style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold
-                            ),
+                            widget.media.title,  
+                            style: Theme.of(context).textTheme.titleLarge,
                         ),
                         // oooooooooooooo END - TITLE ooooooooooooooooooo
 
 
-                        SizedBox(height: 5),
+                        SizedBox(height: 10),
 
 
                         // oooooooooooooo DESCRIPTION ooooooooooooooooooo
@@ -113,12 +106,18 @@ class MediaCardState extends State<MediaCard> {
                             widget.media.description,
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: Theme.of(context).colorScheme.onSurface
+                            ),
                         ),
                         // oooooooooooooo END - DESCRIPTION ooooooooooooooooooo
 
+
                         // %%%%%%%%%%%%%%%%% BUTTONS %%%%%%%%%%%%%%% 
                         Row(
-
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
 
                                 // oooooooooooooo MODIFY oooooooooooooo 
@@ -132,7 +131,8 @@ class MediaCardState extends State<MediaCard> {
                                 // oooooooooooooo DELETE oooooooooooooo 
                                 IconButton(
                                         onPressed: onDelete, 
-                                        icon: Icon(Icons.delete)
+                                        icon: Icon(Icons.delete),
+                                        color: AppColors.deepVineRed,
                                     ),
                                 // oooooooooooooo END - DELETE oooooooooooooo 
 

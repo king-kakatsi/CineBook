@@ -1,7 +1,7 @@
 
 import 'package:first_project/core/themes/app_theme.dart';
 import 'package:first_project/views/home_page/home_page.dart';
-import 'package:first_project/views/home_page/widgets/media_list/media_list_viewModel.dart';
+import 'package:first_project/views/home_page/widgets/media_list/media_list_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';

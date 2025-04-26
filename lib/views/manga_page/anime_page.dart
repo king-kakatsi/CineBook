@@ -12,7 +12,7 @@ class AnimePage extends StatelessWidget{
             mediaType: Mediatype.anime,
             title: 'Blade of Destiny',
             description: 'A warrior seeks revenge in a cursed land.',
-            imageUrl: 'https://via.placeholder.com/150x200?text=Blade+of+Destiny',
+            imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2iYUZeztetyKx8K4s8a6oFqRasusPGjbAdw&s',
             numberOfSeasons: 1,
 
             seasons: [
@@ -20,7 +20,7 @@ class AnimePage extends StatelessWidget{
                     uniqueId: 'a1s1',
                     index: 1,
                     description: 'His path begins in the village of shadows.',
-                    imageUrl: 'https://via.placeholder.com/120x180?text=Blade+S1',
+                    imageUrl: 'https://static0.gamerantimages.com/wordpress/wp-content/uploads/2024/12/best-school-anime-everyone-should-watch.jpg',
                     numberOfEpisodes: 12,
                 ),
             ],

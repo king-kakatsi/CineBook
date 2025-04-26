@@ -1,8 +1,9 @@
+import 'package:first_project/core/themes/color_palette.dart';
 import 'package:first_project/core/widgets/toggle_button_group.dart';
 import 'package:first_project/views/home_page/widgets/card.dart';
 import 'package:first_project/views/home_page/widgets/media_list/media_list_controller.dart';
 import 'package:first_project/models/media.dart';
-import 'package:first_project/views/home_page/widgets/media_list/media_list_viewModel.dart';
+import 'package:first_project/views/home_page/widgets/media_list/media_list_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -73,6 +74,8 @@ class MediaListPageState extends State<MediaListPage>{
     
     // ooooooooooooooo VARIABLES ooooooooooooooooo
     final viewModel = Provider.of<MediaListViewModel>(context);
+
+    Color searchBarBackground = Theme.of(context).brightness == Brightness.dark ? AppColors.darkField : AppColors.lightField;
     // ooooooooooooooo END - VARIABLES ooooooooooooooooo
 
 
@@ -89,22 +92,25 @@ class MediaListPageState extends State<MediaListPage>{
 
                     // :::::-:::::-:-- SEARCH BAR :::::-:::::-:--
                     TextField(
-                            decoration: InputDecoration(
+                        decoration: InputDecoration(
 
-                                hintText: "Search here...",
-                                prefixIcon: Icon(Icons.search),
-                                filled: true,
-                                fillColor: Colors.grey[200],
-                                contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                            hintText: "Search here...",
+                            prefixIcon: Icon(Icons.search),
+                            filled: true,
+                            fillColor: searchBarBackground,
+                            contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
 
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(70),
-                                    borderSide: BorderSide.none
-                                )
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(70),
+                                borderSide: BorderSide(
+                                    color: Theme.of(context).colorScheme.onSurface,
+                                    width: .02,
+                                ),
+                            )
 
-                            ),
-                            
                         ),
+                        
+                    ),
                     // :::::-:::::-:-- END - SEARCH BAR :::::-:::::-:--
 
 
@@ -113,7 +119,11 @@ class MediaListPageState extends State<MediaListPage>{
                         spacing: 5,
                         children: [
                             Text(
-                                "Sort by:",
+                                "Sort by",
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Theme.of(context).colorScheme.onSurface,
+                                    fontWeight: FontWeight.w600
+                                ),
                             ),
 
                             SizedBox(width: 5),
@@ -157,7 +167,6 @@ class MediaListPageState extends State<MediaListPage>{
 
             // On pressed
             onPressed: _controller.goToAddNewMedia,
-
             // child
             child: const Icon(Icons.add),
         ),

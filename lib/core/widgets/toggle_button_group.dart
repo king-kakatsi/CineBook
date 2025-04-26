@@ -87,9 +87,13 @@ class ToggleButtonGroupState extends State<ToggleButtonGroup> {
                     return OutlinedButton(
 
                         style: OutlinedButton.styleFrom(
-                            backgroundColor: isSelected ? Colors.purple : Colors.transparent,
-                            foregroundColor: isSelected ? Colors.black : Colors.purple,
-                            side: BorderSide(color: Colors.purple),
+                            backgroundColor: isSelected ? Theme.of(context).colorScheme.primary : Colors.transparent,
+
+                            foregroundColor: isSelected ? Colors.white54 : Theme.of(context).colorScheme.primary,
+
+                            textStyle: Theme.of(context).textTheme.labelLarge,
+
+                            side: BorderSide(color: Theme.of(context).colorScheme.primary),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
                         ),
 
