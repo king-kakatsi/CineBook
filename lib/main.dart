@@ -1,23 +1,91 @@
-
 import 'package:first_project/core/themes/app_theme.dart';
-import 'package:first_project/views/home_page/home_page.dart';
+import 'package:first_project/core/themes/theme_viewmodel.dart';
+import 'package:first_project/models/media.dart';
+import 'package:first_project/views/media_edit/media_edit_page.dart';
 import 'package:first_project/views/home_page/widgets/media_list/media_list_viewmodel.dart';
+import 'package:first_project/views/root_page/root_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
-void main() {
 
+// @@@@@@@@@@@@@@@@@@@ MAIN @@@@@@@@@@@@@@@@@@@@@@@@
+void main() async {
+
+    WidgetsFlutterBinding.ensureInitialized();
+    initGetIt();
+    await initHive();
+    runApp(AppRoot());
+}
+
+
+
+// %%%%%%%%%%%%%%%%% INIT GET IT %%%%%%%%%%%%%%%%%%%%
+void initGetIt() {
     final getIt = GetIt.instance;
     getIt.registerSingleton<MediaListViewModel>(MediaListViewModel());
-
-    runApp(MyApp());
+    getIt.registerSingleton<ThemeViewModel>(ThemeViewModel());
 }
+// %%%%%%%%%%%%%%%%% END - INIT GET IT %%%%%%%%%%%%%%%%%%%%
+
+
+
+
+// %%%%%%%%%%%%%%%%%% INIT HIVE %%%%%%%%%%%%%%%%%%%%
+Future<void> initHive() async {
+    final appDocDir = await getApplicationDocumentsDirectory();
+    Hive.init(appDocDir.path);
+
+    Hive.registerAdapter(MediatypeAdapter());
+    Hive.registerAdapter(SeasonAdapter());
+    Hive.registerAdapter(MediaAdapter());
+
+    await Hive.openBox<Media>(Mediatype.series.name);
+    await Hive.openBox<Media>(Mediatype.anime.name);
+}
+// %%%%%%%%%%%%%%%%%% END - INIT HIVE %%%%%%%%%%%%%%%%%%%%
+
+// @@@@@@@@@@@@@@@@@@@ END - MAIN @@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+// @@@@@@@@@@@@@@@@ APP ROOT @@@@@@@@@@@@@@@@@@@@@
+class AppRoot extends StatelessWidget {
+  const AppRoot({super.key});
+
+
+    @override
+    Widget build(BuildContext context) {
+
+        final getIt = GetIt.instance;
+    
+        return MultiProvider(
+            providers: [
+                ChangeNotifierProvider<MediaListViewModel>.value(value: getIt<MediaListViewModel>()),
+                ChangeNotifierProvider<ThemeViewModel>.value(value: getIt<ThemeViewModel>()),
+            ],
+
+            child: MyApp(),
+        );
+    }
+}
+// @@@@@@@@@@@@@@@@à END - APP ROOT @@@@@@@@@@@@@@@@@@@@@
 
 
 
 
 // %%%%%%%%%%%%%%%%%%%%%%% MY APP %%%%%%%%%%%%%%%%%%%%%%%
+
+// PROPERTIES
+// final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+
+
+
 class MyApp extends StatelessWidget {
     const MyApp({super.key});
 
@@ -25,23 +93,41 @@ class MyApp extends StatelessWidget {
     @override
     Widget build(BuildContext context) {
 
-        final getIt = GetIt.instance;
+        return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            // navigatorKey: navigatorKey,
+            title: 'CineBook App',
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: context.watch<ThemeViewModel>().themeMode,
+            // home: RootPage(),
+            
 
-        return MultiProvider(
-            providers: [
-                ChangeNotifierProvider<MediaListViewModel>.value(value: getIt<MediaListViewModel>())
-            ],
+            // ooooooooooooooooooo ROUTES ooooooooooooooooooooo
+            initialRoute: "/",
+            routes: {
+                
+                // °°°°°°°°°° HOME °°°°°°°°°°°°°°°
+                "/": (context) => const RootPage(),
+                // °°°°°°°°°° END - HOME °°°°°°°°°°°°°°°
 
-            child: MaterialApp(
-                debugShowCheckedModeBanner: false,
-                title: 'CineBook App',
-                theme: AppTheme.lightTheme,
-                darkTheme: AppTheme.darkTheme,
-                themeMode: ThemeMode.dark,
-                home: const HomePage(title: 'CineBook'),
-            ),
-        );
-         
+                // °°°°°°°°°°°°°°°° MEDIA EDIT PAGE °°°°°°°°°°°°°°°°°
+                "/mediaEdit": (context) {
+                    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+                    final String title = args['title'];
+                    final EditPageAction editPageAction = args['editPageAction'];
+                    final Media? media = args['media'];
+
+                    return MediaEditPage(
+                        title: title, 
+                        editPageAction: editPageAction,
+                        media: media,
+                    );
+                },
+                // °°°°°°°°°°°°°°°° END - MEDIA EDIT PAGE °°°°°°°°°°°°°°°°°
+            },
+            // ooooooooooooooooooo END - ROUTES ooooooooooooooooooooo
+        );    
     }
 }
 // %%%%%%%%%%%%%%%%%%%%%%% MY APP %%%%%%%%%%%%%%%%%%%%%%%

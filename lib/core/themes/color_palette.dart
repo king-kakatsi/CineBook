@@ -11,7 +11,8 @@ class AppColors {
   // %%%%%%%%%%%%%%%%%%% Light mode colors %%%%%%%%%%%%%%%%%%%
   static const Color lightBackground = Color(0xFFFAFAFA); 
   static const Color lightCard = Color(0xFFCDC1DA);
-  static const Color lightField = Color(0xFFCAC6CE);
+  static const Color lightBorder = Color(0xFF999899);
+  static const Color lightBorderHigh = Color(0xFF696969);
   static const Color lightText = Color(0xFF212121); 
   static const Color lightFloatingButonBackground = Color(0xFF2E2D2D);
   // %%%%%%%%%%%%%%%%%%% Light mode colors %%%%%%%%%%%%%%%%%%%
@@ -20,7 +21,8 @@ class AppColors {
   // %%%%%%%%%%%%%%%%%%% Dark mode colors %%%%%%%%%%%%%%%%%%%
   static const Color darkBackground = Color(0xFF121212);
   static const Color darkCard = Color(0xFF2A2333);
-  static const Color darkField = Color(0xFF29262E); 
+  static const Color darkBorder = Color(0xFF797779); 
+  static const Color darkBorderHigh = Color(0xFF9C9B9C); 
   static const Color darkText = Color(0xFFE0E0E0); 
   static const Color darkFloatingBackground = Color(0xFFBBBABA);
   // %%%%%%%%%%%%%%%%%%% Dark mode colors %%%%%%%%%%%%%%%%%%%

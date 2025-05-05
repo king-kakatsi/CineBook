@@ -75,33 +75,37 @@ class ToggleButtonGroupState extends State<ToggleButtonGroup> {
     // %%%%%%%%%%%%%%%% BUILD %%%%%%%%%%%%%%%%%
     @override Widget build(BuildContext context) {
         
-        return Wrap(
-            spacing: 10,
-            alignment: WrapAlignment.start,
+        return SingleChildScrollView( 
+            scrollDirection: Axis.horizontal,
 
-            children: List.generate(
-                widget.buttons.length, 
+            child:  Wrap(
+                spacing: 10,
+                alignment: WrapAlignment.start,
 
-                (index) {
-                    final bool isSelected = index == selectedIndex;
-                    return OutlinedButton(
+                children: List.generate(
+                    widget.buttons.length, 
 
-                        style: OutlinedButton.styleFrom(
-                            backgroundColor: isSelected ? Theme.of(context).colorScheme.primary : Colors.transparent,
+                    (index) {
+                        final bool isSelected = index == selectedIndex;
+                        return OutlinedButton(
 
-                            foregroundColor: isSelected ? Colors.white54 : Theme.of(context).colorScheme.primary,
+                            style: OutlinedButton.styleFrom(
+                                backgroundColor: isSelected ? Theme.of(context).colorScheme.primary : Colors.transparent,
 
-                            textStyle: Theme.of(context).textTheme.labelLarge,
+                                foregroundColor: isSelected ? Colors.white54 : Theme.of(context).colorScheme.primary,
 
-                            side: BorderSide(color: Theme.of(context).colorScheme.primary),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
-                        ),
+                                textStyle: Theme.of(context).textTheme.labelLarge,
 
-                        onPressed: () => onButtonPressed(index), 
-                        child: Text(widget.buttons[index]),
-                    );
-                }
-            ),
+                                side: BorderSide(color: Theme.of(context).colorScheme.primary),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                            ),
+
+                            onPressed: () => onButtonPressed(index), 
+                            child: Text(widget.buttons[index]),
+                        );
+                    }
+                ),
+            )
         );
     }
     // %%%%%%%%%%%%%%%% END - BUILD %%%%%%%%%%%%%%%%%

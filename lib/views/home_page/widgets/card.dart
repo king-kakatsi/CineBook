@@ -8,6 +8,8 @@ class MediaCard extends StatefulWidget {
 
     // %%%%%%%%%%%%%%% PORPERTIES %%%%%%%%%%%%%%%%%
     final Media media;
+    final VoidCallback? onEdit;
+    final VoidCallback? onDelete;
     // %%%%%%%%%%%%%%% END - PORPERTIES %%%%%%%%%%%%%%%%%
 
 
@@ -17,7 +19,9 @@ class MediaCard extends StatefulWidget {
     const MediaCard({
         
         super.key, 
-        required this.media
+        required this.media,
+        this.onEdit,
+        this.onDelete,
     });
     // %%%%%%%%%%%%%%%%%%%% END - CONSTRUCTOR %%%%%%%%%%%%%%%%%%%%
 
@@ -76,19 +80,24 @@ class MediaCardState extends State<MediaCard> {
                     children: [
 
                         // oooooooooooo IMAGE oooooooooooooooo
-                        Image.network(
-                            widget.media.imageUrl,
-                            height: 120,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
+                        ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: Image.network(
+                                widget.media.imageUrl,
+                                height: 120,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
 
-                            errorBuilder: (context, error, stackTrace) => Icon(
-                                Icons.broken_image, 
-                                size: 80
+                                errorBuilder: (context, error, stackTrace) => Icon(
+                                    Icons.broken_image, 
+                                    size: 80
+                                ),
                             ),
                         ),
                         // oooooooooooo END - IMAGE oooooooooooooooo
 
+
+                        SizedBox(height: 10,),
                         
                         // oooooooooooooo TITLE ooooooooooooooooooo
                         Text(
@@ -122,18 +131,18 @@ class MediaCardState extends State<MediaCard> {
 
                                 // oooooooooooooo MODIFY oooooooooooooo 
                                 IconButton(
-                                        onPressed: onModify, 
-                                        icon: Icon(Icons.edit)
-                                    ),
+                                    onPressed: widget.onEdit, 
+                                    icon: Icon(Icons.edit)
+                                ),
                                 // oooooooooooooo END - MODIFY oooooooooooooo 
 
 
                                 // oooooooooooooo DELETE oooooooooooooo 
                                 IconButton(
-                                        onPressed: onDelete, 
-                                        icon: Icon(Icons.delete),
-                                        color: AppColors.deepVineRed,
-                                    ),
+                                    onPressed: widget.onDelete, 
+                                    icon: Icon(Icons.delete),
+                                    color: AppColors.deepVineRed,
+                                ),
                                 // oooooooooooooo END - DELETE oooooooooooooo 
 
                             ],

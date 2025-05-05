@@ -18,14 +18,17 @@ class AppTheme {
     ),
 
     colorScheme: ColorScheme.light(
-      primary: AppColors.primary,
-      onPrimary: Colors.white, // Text on primary color (usually white)
-      secondary: AppColors.secondary,
-      onSecondary: Colors.black, // Text on secondary color
-      error: AppColors.deepVineRed, // Custom deep vine red for errors
-      onError: Colors.white, // Text on error color
-      surface: AppColors.lightBackground, // Background color for surfaces (cards, etc.)
-      onSurface: AppColors.lightText, // Text on surfaces
+        primary: AppColors.primary,
+        onPrimary: Colors.white, // Text on primary color (usually white)
+        secondary: AppColors.secondary,
+        onSecondary: Colors.black, // Text on secondary color
+        error: AppColors.deepVineRed, // Custom deep vine red for errors
+        onError: Colors.white, // Text on error color
+        surface: AppColors.lightBackground, // Background color for surfaces (cards, etc.)
+        onSurface: AppColors.lightText, // Text on surfaces
+        surfaceContainerHigh: AppColors.lightBorder,
+        surfaceContainerHighest: AppColors.lightBorderHigh,
+        surfaceContainer: AppColors.lightCard, 
     ),
 
     textTheme: TextTheme(
@@ -68,14 +71,17 @@ class AppTheme {
     ),
 
     colorScheme: ColorScheme.dark(
-      primary: AppColors.primary,
-      onPrimary: Colors.white, // Text on primary color (usually white)
-      secondary: AppColors.secondary,
-      onSecondary: Colors.black, // Text on secondary color
-      error: AppColors.deepVineRed, // Custom deep vine red for errors
-      onError: Colors.white, // Text on error color
-      surface: AppColors.darkBackground, // Background color for surfaces (cards, etc.)
-      onSurface: AppColors.darkText, // Text on surfaces
+        primary: AppColors.primary,
+        onPrimary: Colors.white, // Text on primary color (usually white)
+        secondary: AppColors.secondary,
+        onSecondary: Colors.black, // Text on secondary color
+        error: AppColors.deepVineRed, // Custom deep vine red for errors
+        onError: Colors.white, // Text on error color
+        surface: AppColors.darkBackground, // Background color for surfaces (cards, etc.)
+        onSurface: AppColors.darkText, // Text on surfaces
+        surfaceContainerHigh: AppColors.darkBorder,
+        surfaceContainerHighest: AppColors.darkBorderHigh,
+        surfaceContainer: AppColors.darkCard,
     ),
 
     textTheme: TextTheme(

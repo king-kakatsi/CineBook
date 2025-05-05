@@ -20,7 +20,6 @@ class AppTextStyles {
     fontFamily: 'Raleway',
     fontSize: 16,
     fontWeight: FontWeight.w700, // Bold
-    color: AppColors.lightText,
   );
 
   static const TextStyle coloredTitle = TextStyle(
