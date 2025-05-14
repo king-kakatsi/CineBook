@@ -1,9 +1,10 @@
 import 'package:first_project/core/themes/app_theme.dart';
 import 'package:first_project/core/themes/theme_viewmodel.dart';
 import 'package:first_project/models/media.dart';
-import 'package:first_project/views/media_edit/media_edit_page.dart';
-import 'package:first_project/views/home_page/widgets/media_list/media_list_viewmodel.dart';
-import 'package:first_project/views/root_page/root_page.dart';
+import 'package:first_project/views/media_details_page.dart';
+import 'package:first_project/views/media_edit_page.dart';
+import 'package:first_project/core/widgets/media_list/media_list_controller.dart';
+import 'package:first_project/views/root_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
@@ -25,7 +26,7 @@ void main() async {
 // %%%%%%%%%%%%%%%%% INIT GET IT %%%%%%%%%%%%%%%%%%%%
 void initGetIt() {
     final getIt = GetIt.instance;
-    getIt.registerSingleton<MediaListViewModel>(MediaListViewModel());
+    getIt.registerSingleton<MediaListController>(MediaListController());
     getIt.registerSingleton<ThemeViewModel>(ThemeViewModel());
 }
 // %%%%%%%%%%%%%%%%% END - INIT GET IT %%%%%%%%%%%%%%%%%%%%
@@ -42,6 +43,8 @@ Future<void> initHive() async {
     Hive.registerAdapter(SeasonAdapter());
     Hive.registerAdapter(MediaAdapter());
 
+    // await Hive.deleteBoxFromDisk(Mediatype.series.name);
+    // await Hive.deleteBoxFromDisk(Mediatype.anime.name);
     await Hive.openBox<Media>(Mediatype.series.name);
     await Hive.openBox<Media>(Mediatype.anime.name);
 }
@@ -65,7 +68,7 @@ class AppRoot extends StatelessWidget {
     
         return MultiProvider(
             providers: [
-                ChangeNotifierProvider<MediaListViewModel>.value(value: getIt<MediaListViewModel>()),
+                ChangeNotifierProvider<MediaListController>.value(value: getIt<MediaListController>()),
                 ChangeNotifierProvider<ThemeViewModel>.value(value: getIt<ThemeViewModel>()),
             ],
 
@@ -125,6 +128,18 @@ class MyApp extends StatelessWidget {
                     );
                 },
                 // °°°°°°°°°°°°°°°° END - MEDIA EDIT PAGE °°°°°°°°°°°°°°°°°
+
+
+                // °°°°°°°°°°°°°°°° MEDIA DEATILS PAGE °°°°°°°°°°°°°°°°°
+                "/mediaDetails": (context) {
+                    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+                    final Media media = args['media'];
+
+                    return MediaDetailsPage(
+                        media: media,
+                    );
+                },
+                // °°°°°°°°°°°°°°°° END - MEDIA DEATILS PAGE °°°°°°°°°°°°°°°°°
             },
             // ooooooooooooooooooo END - ROUTES ooooooooooooooooooooo
         );    

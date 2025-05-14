@@ -1,8 +1,8 @@
 // import 'package:first_project/viewmodels/home_viewmodel.dart';
 // import 'package:first_project/views/home_page/home_page_controller.dart';
-import 'package:first_project/views/anime_page/anime_page.dart';
-import 'package:first_project/views/media_edit/media_edit_page.dart';
-import 'package:first_project/views/series_page/series_page.dart';
+import 'package:first_project/views/anime_page.dart';
+import 'package:first_project/views/media_edit_page.dart';
+import 'package:first_project/views/series_page.dart';
 import 'package:flutter/material.dart';
 // import 'package:provider/provider.dart';
 

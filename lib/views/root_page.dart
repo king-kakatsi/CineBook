@@ -1,6 +1,6 @@
 import 'package:first_project/core/themes/theme_viewmodel.dart';
 import 'package:first_project/core/widgets/menu.dart';
-import 'package:first_project/views/home_page/home_page.dart';
+import 'package:first_project/views/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 // import 'package:vector_math/vector_math_64.dart' show Matrix4;
@@ -100,6 +100,16 @@ class RootPageState extends State<RootPage> with SingleTickerProviderStateMixin 
         });
     }
     // %%%%%%%%%%%%%%%%%% END - TOGGLE MENU %%%%%%%%%%%%%%%%%
+
+
+
+
+    // %%%%%%%%%%%%%%%%%%%%%%%%% DISPOSE %%%%%%%%%%%%%%%%%%
+    @override void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+    // %%%%%%%%%%%%%%%%%%%%%%%%% END - DISPOSE %%%%%%%%%%%%%%%%%%
 
 
 

@@ -1,4 +1,4 @@
-import 'package:first_project/views/home_page/widgets/media_list/media_list_view.dart';
+import 'package:first_project/core/widgets/media_list/media_list_view.dart';
 import 'package:first_project/models/media.dart';
 import 'package:flutter/material.dart';
 

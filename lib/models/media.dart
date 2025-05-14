@@ -37,27 +37,30 @@ class Media {
     late String imageUrl;
 
     @HiveField(5)
-    late double? rate;
+    late String imagePath;
 
     @HiveField(6)
-    late int? numberOfSeasons;
+    late double? rate;
 
     @HiveField(7)
-    late List<Season>? seasons;
+    late int? numberOfSeasons;
 
     @HiveField(8)
-    late String searchFinder;
+    late List<Season>? seasons;
 
     @HiveField(9)
-    late DateTime creationDate;
+    late String searchFinder;
 
     @HiveField(10)
-    late DateTime lastModificationDate;
+    late DateTime creationDate;
 
     @HiveField(11)
-    late int? currentSeasonIndex;
+    late DateTime lastModificationDate;
 
     @HiveField(12)
+    late int? currentSeasonIndex;
+
+    @HiveField(13)
     late int? currentEpisodeIndex;
 
     // %%%%%%%%%%%%%%%%%% END - PROPERTIES %%%%%%%%%%%%%%%%%%%%%

@@ -99,7 +99,9 @@ class DynamicFormPageState extends State<DynamicFormPage> {
         super.initState();
 
         for (var formObject in widget.formObjects) {
-            _controllers[formObject.id] = TextEditingController();
+            _controllers[formObject.id] = TextEditingController(
+                text: formObject.initialValue ?? '',
+            );
         }
     }
     // %%%%%%%%%%%%%%%%%%%%%% END - INIT STATE %%%%%%%%%%%%%%%%%%%%%
@@ -362,6 +364,7 @@ class DynamicFormPageState extends State<DynamicFormPage> {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
 
+                    // °°°°°°°°°°°°°°°°° FILEDS °°°°°°°°°°°°°°°°°°°°°
                     children: [ 
                         Wrap(
                             runSpacing: 20,
@@ -377,15 +380,17 @@ class DynamicFormPageState extends State<DynamicFormPage> {
                                 );
                             }).toList(),
                         ),
+                        // °°°°°°°°°°°°°°°°° END - FILEDS °°°°°°°°°°°°°°°°°°°°°
 
                         const SizedBox(height: 30,),
 
+                        // °°°°°°°°°°°°°°°° EDIT AND DELETE BUTTONS °°°°°°°°°°°°°°°°°°°
                         Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             spacing: 20,
                             children: [
 
-                                // RESTORE BUTTON
+                                // =============== RESTORE BUTTON ===================
                                 Expanded(
                                     child: OutlinedButton(
                                         onPressed: _restore,
@@ -404,9 +409,10 @@ class DynamicFormPageState extends State<DynamicFormPage> {
                                         child: Text('Restore'),
                                     ),
                                 ),
+                                // =============== END - RESTORE BUTTON ===================
 
 
-                                // SUBMIT BUTTON
+                                // ========== SUBMIT BUTTON ===================
                                 Expanded(
                                     child: ElevatedButton(
                                         onPressed: _submitForm,
@@ -422,8 +428,10 @@ class DynamicFormPageState extends State<DynamicFormPage> {
                                         child: Text('Submit'),
                                     ),
                                 ),
+                                // ========== END - SUBMIT BUTTON ===================
                             ],
                         ),
+                        // °°°°°°°°°°°°°°°° END - EDIT AND DELETE BUTTONS °°°°°°°°°°°°°°°°°°°
                     ]
                 ),
             )

@@ -1,6 +1,7 @@
 import 'package:first_project/core/widgets/dynamic_form.dart';
 import 'package:first_project/models/media.dart';
-import 'package:first_project/views/home_page/widgets/media_list/media_list_viewmodel.dart';
+import 'package:first_project/core/widgets/media_list/media_list_controller.dart';
+import 'package:first_project/services/media_getter.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:uuid/uuid.dart';
@@ -103,7 +104,7 @@ class MediaEditPageState extends State<MediaEditPage> {
             FormObject(
                 id: 'rate',
                 title: 'Rate',
-                hint: 'Enter the rate (0-10)',
+                hint: 'Enter the rate (0-5)',
                 type: FormFieldType.number,
                 widthFactor: 1.0,
                 initialValue: _initialValues['rate'],
@@ -137,6 +138,7 @@ class MediaEditPageState extends State<MediaEditPage> {
     // %%%%%%%%%%%%%%%%%%%%%% HANDLE SUBMIT %%%%%%%%%%%%%%%%%%%%
     void _handleSubmit (Map<String, String?> results) async {
 
+        // °°°°°°°°°°°°°°° INIT MEDIA TYPE °°°°°°°°°°°°°°°
         Mediatype mediaType;
         switch (widget.editPageAction) {
             case EditPageAction.createSeries:
@@ -148,13 +150,14 @@ class MediaEditPageState extends State<MediaEditPage> {
                 mediaType = Mediatype.anime;
                 break;
         }
+        // °°°°°°°°°°°°°°° END - INIT MEDIA TYPE °°°°°°°°°°°°°°°
 
         try{
 
-            final viewModel = GetIt.instance<MediaListViewModel>();
+            final mediaListController = GetIt.instance<MediaListController>();
 
             if (widget.media == null) {
-                // Create new media
+                // °°°°°°°°°°°°°°° CREATE NEW MEDIA °°°°°°°°°°°°°°°° 
                 final newMedia = Media(
                     mediaType: mediaType,
                     title: results['title'] ?? '',
@@ -165,15 +168,27 @@ class MediaEditPageState extends State<MediaEditPage> {
                 newMedia.currentEpisodeIndex = int.tryParse(results['currentEpisodeIndex'] ?? '');
                 newMedia.description = results['description'] ?? '';
                 newMedia.rate = double.tryParse(results['rate'] ?? '');
+
+                // ============ FETCH THE IMAGE ================
                 newMedia.imageUrl = results['imageUrl'] ?? '';
+                if (newMedia.imageUrl != '' && newMedia.imageUrl.isNotEmpty){
+                    final tempPath = await MediaGetter.fetchImageFromUrl(newMedia.imageUrl);
+                    newMedia.imagePath = tempPath ?? '';
+                }
+                // ============ END - FETCH THE IMAGE ================
+
                 newMedia.creationDate = DateTime.now();
                 newMedia.lastModificationDate = DateTime.now();
                 newMedia.generateSearchFinder();
                 
-                viewModel.addInList(newMedia);
+                mediaListController.addInList(newMedia);
+
+                // °°°°°°°°°°°°°°° END - CREATE NEW MEDIA °°°°°°°°°°°°°°°° 
 
             } else {
-                // Modify existing media
+                // °°°°°°°°°°°°°° MODIFY EXISTING MEDIA °°°°°°°°°°°°°°°°°°
+                final prevUrl = '${widget.media!.imageUrl}';
+                final prevPath = '${widget.media!.imagePath}';
                 widget.media!
                     ..title = results['title'] ?? widget.media!.title
                     ..description = results['description'] ?? widget.media!.description
@@ -185,8 +200,22 @@ class MediaEditPageState extends State<MediaEditPage> {
                 
                 widget.media!.lastModificationDate = DateTime.now();
 
+                // ============ FETCH THE IMAGE ================
+                widget.media!.imageUrl = results['imageUrl'] ?? '';
+                if (prevUrl != widget.media!.imageUrl){
+
+                    if (widget.media!.imageUrl != '' && widget.media!.imageUrl.isNotEmpty) {
+                        final tempPath = await MediaGetter.fetchImageFromUrl(widget.media!.imageUrl);
+                        widget.media!.imagePath = tempPath ?? '';
+                    }
+                    MediaGetter.deleteFromLocalDir(prevPath);
+                }
+                // ============ END - FETCH THE IMAGE ================
+
                 widget.media!.generateSearchFinder();
-                viewModel.addInList(widget.media!);
+                mediaListController.updateInList(widget.media!);
+                Navigator.of(context).pop();
+                // °°°°°°°°°°°°°° END - MODIFY EXISTING MEDIA °°°°°°°°°°°°°°°°°°
             }
 
             ScaffoldMessenger.of(context).showSnackBar(
@@ -195,7 +224,6 @@ class MediaEditPageState extends State<MediaEditPage> {
                 )
             );
 
-
         } catch (e) {
             // final context = navigatorKey.currentContext;
             ScaffoldMessenger.of(context).showSnackBar(
@@ -203,7 +231,6 @@ class MediaEditPageState extends State<MediaEditPage> {
                     content: Text("Something went wrong. Try again later"),
                 )
             );
-
         }
 
         // pop here

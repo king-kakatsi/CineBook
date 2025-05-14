@@ -1,15 +1,21 @@
 import 'package:first_project/core/widgets/display_alert.dart';
 import 'package:first_project/models/media.dart';
+import 'package:first_project/services/hive_service.dart';
+import 'package:first_project/services/media_getter.dart';
+import 'package:first_project/views/media_edit_page.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
-class MediaListViewModel extends ChangeNotifier {
+class MediaListController extends ChangeNotifier {
     
     // %%%%%%%%%%%%%%%%% PROPERTIES %%%%%%%%%%%%%%%%%%%%%
     List<Media> initialMediaList = [];
     List<Media> mediaList = [];
     List<String> sortButtons = ["Date", "Title", "Rate"];
     int _currentSortIndex = 0;
+
+    /// Public property that contains the hive box name. 
+    /// This is generally provided in the view where the controller is used.
     late String hiveBoxName;
     // %%%%%%%%%%%%%%%%% END - PROPERTIES %%%%%%%%%%%%%%%%%%%%%
 
@@ -19,7 +25,7 @@ class MediaListViewModel extends ChangeNotifier {
     // %%%%%%%%%%%%%%%%%% INITIALIZE %%%%%%%%%%%%%%%%%%%
     void initialize () async {
 
-        var mediaBox = await Hive.openBox<Media>(hiveBoxName);
+        var mediaBox = Hive.box<Media>(hiveBoxName);
         initialMediaList = mediaBox.values.toList();
 
         mediaList = [...initialMediaList];
@@ -115,29 +121,64 @@ class MediaListViewModel extends ChangeNotifier {
 
 
 
-    // %%%%%%%%%%%%%%%%%%%%%%%% DELETE MEDIA IN LIST %%%%%%%%%%%%%%%%%%
-    void deleteInList (BuildContext context, String mediaId) async {
-        var result = await Alert.display(
+    // %%%%%%%%%%%%%%%%%%%% EDIT MEDIA %%%%%%%%%%%%%%%%%%%%%%
+    void goToEditMedia (BuildContext context, Media media) {
+        Navigator.of(context).pushNamed(
+            "/mediaEdit",
+            arguments: {
+                'title': media.mediaType == Mediatype.series ? 'Edit series' : 'Edit anime',
 
-            context, 
-            "DELETE", 
-            "Are you sure you want to delete this?", 
-            approvalButtonText: "Yes",
-            cancellationButtonText: "No",
-            barrierDismissible: true,
-            backgroundColor: Theme.of(context).colorScheme.surfaceContainer
+                'editPageAction': media.mediaType == Mediatype.series
+                    ? EditPageAction.editSeries
+                    : EditPageAction.editAnime,
+
+                'media': media,
+            },
+        );
+    }
+    // %%%%%%%%%%%%%%%%%%%% END - EDIT MEDIA %%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+    // %%%%%%%%%%%%%%%%%%%%%%%% DELETE MEDIA IN LIST %%%%%%%%%%%%%%%%%%
+    void deleteInList (BuildContext context, Media media) async {
+        
+        var done = await HiveService.delete<Media>(
+            hiveBoxName, 
+
+            () => Alert.display(
+                context, 
+                "DELETE", 
+                "Are you sure you want to delete this?", 
+                approvalButtonText: "Yes",
+                cancellationButtonText: "No",
+                barrierDismissible: true,
+                backgroundColor: Theme.of(context).colorScheme.surfaceContainer
+            ), 
+
+            media.uniqueId
         );
 
-        if (result == null || !result) return;
-
-        var mediaBox = await Hive.openBox<Media>(hiveBoxName);
-        mediaBox.delete(mediaId);
-
-        initialMediaList.removeWhere((media) => media.uniqueId == mediaId);
-        mediaList = [...initialMediaList];
-        notifyListeners();
+        if (done) {
+            initialMediaList.removeWhere((media) => media.uniqueId == media.uniqueId);
+            mediaList = [...initialMediaList];
+            MediaGetter.deleteFromLocalDir(media.imagePath);
+            notifyListeners();
+        }  
     }
     // %%%%%%%%%%%%%%%%%%%%%%%% END - DELETE MEDIA IN LIST %%%%%%%%%%%%%%%%%%
+
+
+
+
+    // %%%%%%%%%%%%%%%%%%%%% DELETE MEDIA FROM DETAILS PAGE %%%%%%%%%%%%%%%%%%%%
+    void deleteFromDetailsPage (BuildContext context, Media media) {
+        
+        deleteInList(context, media);
+        Navigator.of(context).pop();
+    }
+    // %%%%%%%%%%%%%%%%%%%%% END - DELETE MEDIA FROM DETAILS PAGE %%%%%%%%%%%%%%%%%%%%
 
 
 
@@ -145,14 +186,44 @@ class MediaListViewModel extends ChangeNotifier {
     // %%%%%%%%%%%%%%%%%%%%%%%% ADD MEDIA IN LIST %%%%%%%%%%%%%%%%%%
     void addInList (Media media) async {
 
-        var mediaBox = await Hive.openBox<Media>(hiveBoxName);
-        await mediaBox.put(media.uniqueId, media);
+        var done = await HiveService.addOrUpdate(
+            hiveBoxName, 
+            media, 
+            media.uniqueId
+        );
 
-        initialMediaList.add(media);
-        mediaList = [...initialMediaList];
-        sortBy(_currentSortIndex, sortButtons); // notifyListeners() is in this method
+        if (done) {
+            initialMediaList.add(media);
+            mediaList = [...initialMediaList];
+            sortBy(_currentSortIndex, sortButtons); // notifyListeners() is in this method
+            notifyListeners();
+        }
+        
     }
     // %%%%%%%%%%%%%%%%%%%%%%%% END - ADD MEDIA IN LIST %%%%%%%%%%%%%%%%%%
+
+
+
+
+    // %%%%%%%%%%%%%%%%%%%%%%%% UPDATE MEDIA IN LIST %%%%%%%%%%%%%%%%%%
+    void updateInList (Media media) async {
+
+        var done = await HiveService.addOrUpdate(
+            hiveBoxName, 
+            media, 
+            media.uniqueId
+        );
+
+        if (done) {
+            int mediaIndex = initialMediaList.indexWhere((m) => m.uniqueId == media.uniqueId);
+            if (mediaIndex != -1) initialMediaList[mediaIndex] = media;
+
+            mediaList = [...initialMediaList];
+            sortBy(_currentSortIndex, sortButtons); // notifyListeners() is in this method
+            notifyListeners();
+        }   
+    }
+    // %%%%%%%%%%%%%%%%%%%%%%%% END - UPDATE MEDIA IN LIST %%%%%%%%%%%%%%%%%%
 
   
 }

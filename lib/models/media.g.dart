@@ -23,20 +23,21 @@ class MediaAdapter extends TypeAdapter<Media> {
       ..uniqueId = fields[0] as String
       ..description = fields[3] as String
       ..imageUrl = fields[4] as String
-      ..rate = fields[5] as double?
-      ..numberOfSeasons = fields[6] as int?
-      ..seasons = (fields[7] as List?)?.cast<Season>()
-      ..searchFinder = fields[8] as String
-      ..creationDate = fields[9] as DateTime
-      ..lastModificationDate = fields[10] as DateTime
-      ..currentSeasonIndex = fields[11] as int?
-      ..currentEpisodeIndex = fields[12] as int?;
+      ..imagePath = fields[5] as String
+      ..rate = fields[6] as double?
+      ..numberOfSeasons = fields[7] as int?
+      ..seasons = (fields[8] as List?)?.cast<Season>()
+      ..searchFinder = fields[9] as String
+      ..creationDate = fields[10] as DateTime
+      ..lastModificationDate = fields[11] as DateTime
+      ..currentSeasonIndex = fields[12] as int?
+      ..currentEpisodeIndex = fields[13] as int?;
   }
 
   @override
   void write(BinaryWriter writer, Media obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(14)
       ..writeByte(0)
       ..write(obj.uniqueId)
       ..writeByte(1)
@@ -48,20 +49,22 @@ class MediaAdapter extends TypeAdapter<Media> {
       ..writeByte(4)
       ..write(obj.imageUrl)
       ..writeByte(5)
-      ..write(obj.rate)
+      ..write(obj.imagePath)
       ..writeByte(6)
-      ..write(obj.numberOfSeasons)
+      ..write(obj.rate)
       ..writeByte(7)
-      ..write(obj.seasons)
+      ..write(obj.numberOfSeasons)
       ..writeByte(8)
-      ..write(obj.searchFinder)
+      ..write(obj.seasons)
       ..writeByte(9)
-      ..write(obj.creationDate)
+      ..write(obj.searchFinder)
       ..writeByte(10)
-      ..write(obj.lastModificationDate)
+      ..write(obj.creationDate)
       ..writeByte(11)
-      ..write(obj.currentSeasonIndex)
+      ..write(obj.lastModificationDate)
       ..writeByte(12)
+      ..write(obj.currentSeasonIndex)
+      ..writeByte(13)
       ..write(obj.currentEpisodeIndex);
   }
 
