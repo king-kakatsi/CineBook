@@ -1,8 +1,7 @@
-// import 'package:first_project/viewmodels/home_viewmodel.dart';
-// import 'package:first_project/views/home_page/home_page_controller.dart';
-import 'package:first_project/views/anime_page.dart';
-import 'package:first_project/views/media_edit_page.dart';
-import 'package:first_project/views/series_page.dart';
+
+import 'package:first_project/pages/anime_page.dart';
+import 'package:first_project/pages/media_edit_page.dart';
+import 'package:first_project/pages/series_page.dart';
 import 'package:flutter/material.dart';
 // import 'package:provider/provider.dart';
 
@@ -19,7 +18,6 @@ class HomePage extends StatefulWidget {
 
   // %%%%%%%%%%%%%%%%%%% CONSTRUCTOR %%%%%%%%%%%%%%%%%%%%%
   const HomePage({
-
         super.key, 
         required this.title,
         required this.onMenuPressed,
@@ -47,14 +45,24 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
 
     // %%%%%%%%%%%%%%%%%%%%%%% PROPERTIES %%%%%%%%%%%%%%%%%%%%%%%
-
-    final pages = [
-        SeriesPage(),
-        AnimePage()
-    ];
-
-    int selectedPageIndex = 0;
+    late final List<Widget> _pages;
+    int _selectedPageIndex = 0;
     // %%%%%%%%%%%%%%%%%%%%%%% END - PROPERTIES %%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+    // %%%%%%%%%%%%%%%%%%%% INIT STATE %%%%%%%%%%%%%%%%
+    @override
+    void initState() {
+        super.initState();
+
+        _pages = [
+            SeriesPage(),
+            AnimePage()
+        ];
+    }
+    // %%%%%%%%%%%%%%%%%%%% END - INIT STATE %%%%%%%%%%%%%%%%
 
 
 
@@ -62,7 +70,7 @@ class HomePageState extends State<HomePage> {
     // %%%%%%%%%%%%%%%%%% CHANGE TAB %%%%%%%%%%%%%%%%%%%%
     void onTabTapped(int index) {
         setState(() {
-            selectedPageIndex = index;
+            _selectedPageIndex = index;
         });
     }
     // %%%%%%%%%%%%%%%%%% END - CHANGE TAB %%%%%%%%%%%%%%%%%%%
@@ -94,7 +102,7 @@ class HomePageState extends State<HomePage> {
 
 
             // ooooooooooooooo BODY ooooooooooooooooooo
-            body: pages[selectedPageIndex],
+            body: _pages[_selectedPageIndex],
             // ooooooooooooooo END - BODY ooooooooooooooooooo
             
 
@@ -107,15 +115,15 @@ class HomePageState extends State<HomePage> {
                     "/mediaEdit",
                     
                     arguments: {
-                        'title': selectedPageIndex == 0 ?
+                        'title': _selectedPageIndex == 0 ?
                             'Add series':
                             'Add anime',
 
-                        'editPageAction': selectedPageIndex == 0 ? 
+                        'editPageAction': _selectedPageIndex == 0 ? 
                             EditPageAction.createSeries : 
                             EditPageAction.createAnime,
 
-                        'onSubmit': selectedPageIndex == 0 ? 
+                        'onSubmit': _selectedPageIndex == 0 ? 
                         EditPageAction.createSeries : 
                         EditPageAction.createAnime,
 
@@ -131,7 +139,7 @@ class HomePageState extends State<HomePage> {
             // oooooooooooooooooo BOTTOM NAVIGATION BAR ooooooooooooooo
             bottomNavigationBar: BottomNavigationBar(
                 
-                currentIndex: selectedPageIndex,
+                currentIndex: _selectedPageIndex,
                 onTap: (int index) => onTabTapped(index),
 
                 // ::-----::::::::--:: PAGES ::-----::::::::--::

@@ -1,10 +1,10 @@
-import 'package:first_project/core/themes/app_theme.dart';
-import 'package:first_project/core/themes/theme_viewmodel.dart';
+import 'package:first_project/themes/app_theme.dart';
+import 'package:first_project/themes/theme_viewmodel.dart';
 import 'package:first_project/models/media.dart';
-import 'package:first_project/views/media_details_page.dart';
-import 'package:first_project/views/media_edit_page.dart';
-import 'package:first_project/core/widgets/media_list/media_list_controller.dart';
-import 'package:first_project/views/root_page.dart';
+import 'package:first_project/pages/media_details_page.dart';
+import 'package:first_project/pages/media_edit_page.dart';
+import 'package:first_project/controllers/media_controller.dart';
+import 'package:first_project/pages/root_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
@@ -23,32 +23,31 @@ void main() async {
 
 
 
-// %%%%%%%%%%%%%%%%% INIT GET IT %%%%%%%%%%%%%%%%%%%%
-void initGetIt() {
-    final getIt = GetIt.instance;
-    getIt.registerSingleton<MediaListController>(MediaListController());
-    getIt.registerSingleton<ThemeViewModel>(ThemeViewModel());
-}
-// %%%%%%%%%%%%%%%%% END - INIT GET IT %%%%%%%%%%%%%%%%%%%%
+    // %%%%%%%%%%%%%%%%% INIT GET IT %%%%%%%%%%%%%%%%%%%%
+    void initGetIt() {
+        final getIt = GetIt.instance;
+        getIt.registerSingleton<MediaController>(MediaController());
+        getIt.registerSingleton<ThemeViewModel>(ThemeViewModel());
+    }
+    // %%%%%%%%%%%%%%%%% END - INIT GET IT %%%%%%%%%%%%%%%%%%%%
 
 
 
+    // %%%%%%%%%%%%%%%%%% INIT HIVE %%%%%%%%%%%%%%%%%%%%
+    Future<void> initHive() async {
+        final appDocDir = await getApplicationDocumentsDirectory();
+        Hive.init(appDocDir.path);
 
-// %%%%%%%%%%%%%%%%%% INIT HIVE %%%%%%%%%%%%%%%%%%%%
-Future<void> initHive() async {
-    final appDocDir = await getApplicationDocumentsDirectory();
-    Hive.init(appDocDir.path);
+        Hive.registerAdapter(MediatypeAdapter());
+        Hive.registerAdapter(SeasonAdapter());
+        Hive.registerAdapter(MediaAdapter());
 
-    Hive.registerAdapter(MediatypeAdapter());
-    Hive.registerAdapter(SeasonAdapter());
-    Hive.registerAdapter(MediaAdapter());
-
-    // await Hive.deleteBoxFromDisk(Mediatype.series.name);
-    // await Hive.deleteBoxFromDisk(Mediatype.anime.name);
-    await Hive.openBox<Media>(Mediatype.series.name);
-    await Hive.openBox<Media>(Mediatype.anime.name);
-}
-// %%%%%%%%%%%%%%%%%% END - INIT HIVE %%%%%%%%%%%%%%%%%%%%
+        // await Hive.deleteBoxFromDisk(Mediatype.series.name);
+        // await Hive.deleteBoxFromDisk(Mediatype.anime.name);
+        await Hive.openBox<Media>(Mediatype.series.name);
+        await Hive.openBox<Media>(Mediatype.anime.name);
+    }
+    // %%%%%%%%%%%%%%%%%% END - INIT HIVE %%%%%%%%%%%%%%%%%%%%
 
 // @@@@@@@@@@@@@@@@@@@ END - MAIN @@@@@@@@@@@@@@@@@@@@@@@@
 
@@ -68,7 +67,7 @@ class AppRoot extends StatelessWidget {
     
         return MultiProvider(
             providers: [
-                ChangeNotifierProvider<MediaListController>.value(value: getIt<MediaListController>()),
+                ChangeNotifierProvider<MediaController>.value(value: getIt<MediaController>()),
                 ChangeNotifierProvider<ThemeViewModel>.value(value: getIt<ThemeViewModel>()),
             ],
 
@@ -82,12 +81,6 @@ class AppRoot extends StatelessWidget {
 
 
 // %%%%%%%%%%%%%%%%%%%%%%% MY APP %%%%%%%%%%%%%%%%%%%%%%%
-
-// PROPERTIES
-// final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
-
-
 
 class MyApp extends StatelessWidget {
     const MyApp({super.key});

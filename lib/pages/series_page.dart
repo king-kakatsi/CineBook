@@ -1,4 +1,4 @@
-import 'package:first_project/core/widgets/media_list/media_list_view.dart';
+import 'package:first_project/shared_ui/media_list_widget.dart';
 import 'package:first_project/models/media.dart';
 import 'package:flutter/material.dart';
 
@@ -148,8 +148,8 @@ class SeriesPage extends StatelessWidget{
     @override
     Widget build(BuildContext context) {
 
-        return MediaListPage(
-            
+        return MediaListWidget(
+            context: context,
             mediaType: Mediatype.series, 
             pageTitle: "Series",
             hiveBoxName: Mediatype.series.name,

@@ -1,9 +1,10 @@
-import 'package:first_project/core/themes/theme_viewmodel.dart';
-import 'package:first_project/core/widgets/menu.dart';
-import 'package:first_project/views/home_page.dart';
+import 'package:first_project/controllers/media_controller.dart';
+import 'package:first_project/themes/theme_viewmodel.dart';
+import 'package:first_project/widgets/lottie_animator.dart';
+import 'package:first_project/widgets/menu.dart';
+import 'package:first_project/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-// import 'package:vector_math/vector_math_64.dart' show Matrix4;
 
 
 
@@ -32,11 +33,11 @@ class RootPageState extends State<RootPage> with SingleTickerProviderStateMixin 
     bool isMenuOpen = false;
     late final ThemeViewModel _themeViewModel;
     late final AnimationController _animationController;
-    // late final Animation<double> _scaleAnimation;
     late final Animation<double> _translateYAnimation;
     late final double _translationYValue;
     late final int _animationDuration;
     double _borderRadius = 0.0;
+    final LottieAnimator _lottieAnimator = LottieAnimator();
     // %%%%%%%%%%%%%%%%%% END - PROPERTIES %%%%%%%%%%%%%%%%
 
 
@@ -56,13 +57,11 @@ class RootPageState extends State<RootPage> with SingleTickerProviderStateMixin 
             duration: Duration(milliseconds: _animationDuration),
         );
 
-        // _scaleAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(
-        //     CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-        // );
-
         _translateYAnimation = Tween<double>(begin: 0.0, end: _translationYValue).animate(
             CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
         );
+
+        final mediaController = GetIt.instance<MediaController>();
 
         myMenuMist = [
 
@@ -75,8 +74,37 @@ class RootPageState extends State<RootPage> with SingleTickerProviderStateMixin 
                     _themeViewModel.toggleTheme();
                     toggleMenu();
                 },
-            )
+            ),
             // oooooooooooooo END - CHANGE THEME ooooooooooooooooo
+
+
+            // oooooooooooooo IMPORT BACKUP ooooooooooooooooo
+            MenuOption(
+                icon: Icons.download_for_offline_rounded,
+                title: "Import Backup",
+
+                action: () async => await mediaController.tryImportBackupAndInitialize(
+                    context, 
+                    _lottieAnimator.play, 
+                    _lottieAnimator.stop,
+                    checkIsFirstLaunch: false
+                ),
+            ),
+            // oooooooooooooo END - IMPORT BACKUP ooooooooooooooooo
+
+
+            // oooooooooooooo EXPORT BACKUP ooooooooooooooooo
+            MenuOption(
+                icon: Icons.send_and_archive_rounded,
+                title: "Export Backup",
+
+                action: () async => await mediaController.exportBackup(
+                    context, 
+                    _lottieAnimator.play, 
+                    _lottieAnimator.stop
+                ),
+            ),
+            // oooooooooooooo END - EXPORT BACKUP ooooooooooooooooo
         ];
   }
     // %%%%%%%%%%%%%%%%%%%% END - INIT STATE %%%%%%%%%%%%%%%%%%%
@@ -122,9 +150,18 @@ class RootPageState extends State<RootPage> with SingleTickerProviderStateMixin 
 
             body: Stack(
                 children: [
-                    MyMenu(
-                        menuList: myMenuMist,
-                        onClose: toggleMenu,
+                    _lottieAnimator.builder(
+                        lottieFilePath: "assets/lottie/loading_anim.json",  
+                        backgroundColor: Theme.of(context).colorScheme.onSurface, 
+                        width: 100, 
+                        height: 100,
+                        pushTop: 200,
+                        alignment: Alignment.topCenter,
+
+                        child: MyMenu(
+                            menuList: myMenuMist,
+                            onClose: toggleMenu,
+                        ),
                     ),
                     
                     AnimatedPositioned(

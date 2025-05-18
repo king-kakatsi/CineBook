@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:first_project/core/themes/color_palette.dart';
+import 'package:first_project/themes/color_palette.dart';
 
 class AppTextStyles {
 

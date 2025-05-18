@@ -1,4 +1,4 @@
-import 'package:first_project/core/themes/color_palette.dart';
+import 'package:first_project/themes/color_palette.dart';
 import 'package:first_project/models/media.dart';
 import 'package:flutter/material.dart';
 

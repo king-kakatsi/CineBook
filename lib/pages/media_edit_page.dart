@@ -1,6 +1,7 @@
-import 'package:first_project/core/widgets/dynamic_form.dart';
+import 'package:first_project/widgets/dynamic_form.dart';
+import 'package:first_project/widgets/lottie_animator.dart';
 import 'package:first_project/models/media.dart';
-import 'package:first_project/core/widgets/media_list/media_list_controller.dart';
+import 'package:first_project/controllers/media_controller.dart';
 import 'package:first_project/services/media_getter.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -51,6 +52,7 @@ class MediaEditPageState extends State<MediaEditPage> {
     // %%%%%%%%%%%%%%%%%% PROPERTIES %%%%%%%%%%%%%%%%
     late final List<FormObject> _formObjects;
     late final Map<String, String?> _initialValues;
+    final LottieAnimator _lottieAnimator = LottieAnimator();
     // %%%%%%%%%%%%%%%%%% END - PROPERTIES %%%%%%%%%%%%%%%%
 
 
@@ -138,6 +140,9 @@ class MediaEditPageState extends State<MediaEditPage> {
     // %%%%%%%%%%%%%%%%%%%%%% HANDLE SUBMIT %%%%%%%%%%%%%%%%%%%%
     void _handleSubmit (Map<String, String?> results) async {
 
+        // Play await Anim
+        _lottieAnimator.play();
+
         // °°°°°°°°°°°°°°° INIT MEDIA TYPE °°°°°°°°°°°°°°°
         Mediatype mediaType;
         switch (widget.editPageAction) {
@@ -152,9 +157,10 @@ class MediaEditPageState extends State<MediaEditPage> {
         }
         // °°°°°°°°°°°°°°° END - INIT MEDIA TYPE °°°°°°°°°°°°°°°
 
+        bool done = true;
         try{
 
-            final mediaListController = GetIt.instance<MediaListController>();
+            final mediaController = GetIt.instance<MediaController>();
 
             if (widget.media == null) {
                 // °°°°°°°°°°°°°°° CREATE NEW MEDIA °°°°°°°°°°°°°°°° 
@@ -181,7 +187,7 @@ class MediaEditPageState extends State<MediaEditPage> {
                 newMedia.lastModificationDate = DateTime.now();
                 newMedia.generateSearchFinder();
                 
-                mediaListController.addInList(newMedia);
+                mediaController.addInList(newMedia);
 
                 // °°°°°°°°°°°°°°° END - CREATE NEW MEDIA °°°°°°°°°°°°°°°° 
 
@@ -213,18 +219,28 @@ class MediaEditPageState extends State<MediaEditPage> {
                 // ============ END - FETCH THE IMAGE ================
 
                 widget.media!.generateSearchFinder();
-                mediaListController.updateInList(widget.media!);
-                Navigator.of(context).pop();
+                mediaController.updateInList(widget.media!);
                 // °°°°°°°°°°°°°° END - MODIFY EXISTING MEDIA °°°°°°°°°°°°°°°°°°
             }
 
+        } catch (e) {
+            done = false;
+        }
+
+        // Stop await Anim
+        await Future.delayed(Duration(seconds: 1));
+        _lottieAnimator.stop();
+
+        if (done) {
             ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                     content: Text("Successfully done"),
                 )
             );
+            await Future.delayed(Duration(seconds: 1));
+            Navigator.of(context).pop();
 
-        } catch (e) {
+        } else {
             // final context = navigatorKey.currentContext;
             ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -232,9 +248,6 @@ class MediaEditPageState extends State<MediaEditPage> {
                 )
             );
         }
-
-        // pop here
-        // Navigator.of(context).pop();
     }
     // %%%%%%%%%%%%%%%%%%%%%% END - HANDLE SUBMIT %%%%%%%%%%%%%%%%%%%%
 
@@ -269,10 +282,18 @@ class MediaEditPageState extends State<MediaEditPage> {
                 body: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 0, vertical: 50),
 
-                    child: DynamicFormPage(
-                        formObjects: _formObjects,
-                        onSubmit: _handleSubmit,
+                    child: _lottieAnimator.builder(
+                        lottieFilePath: "assets/lottie/loading_anim.json",  
+                        backgroundColor: Theme.of(context).colorScheme.onSurface, 
+                        width: 100, 
+                        height: 100,
+
+                        child: DynamicFormPage(
+                            formObjects: _formObjects,
+                            onSubmit: _handleSubmit,
+                        ),
                     ),
+                         
                 ) 
                 // ooooooooooooooo END - BODY ooooooooooooooooooo
             )

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:first_project/core/themes/color_palette.dart';
+import 'package:first_project/themes/color_palette.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -181,6 +181,7 @@ class MediaCarouselCard extends StatefulWidget {
 
                 Container(
                     height: widget.height,
+                    clipBehavior: Clip.antiAlias,
 
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(widget.borderRadius),
@@ -193,8 +194,6 @@ class MediaCarouselCard extends StatefulWidget {
                         ),
                         ],
                     ),
-
-                    clipBehavior: Clip.antiAlias,
 
                     child: PageView.builder(
                         controller: _pageController,
@@ -217,7 +216,6 @@ class MediaCarouselCard extends StatefulWidget {
                 ),
 
 
-                // Title fixed at the bottom
                 Positioned(
                     bottom: 0,
                     left: 0,
@@ -240,21 +238,22 @@ class MediaCarouselCard extends StatefulWidget {
                             children: [ 
 
                                 // oooooooooooooo TITLE oooooooooooooooo
-                                Flexible( 
-                                    fit: FlexFit.loose, 
+                                Expanded(
                                     
-                                    child: Text(
-                                        widget.title,
-                                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                            ),
-                                        textAlign: TextAlign.center,
+                                    child: Align(
+                                        alignment: Alignment.centerLeft, 
+
+                                            child: Text(
+                                            widget.title,
+                                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                ),
+                                            textAlign: TextAlign.center,
+                                        ),
                                     ),
                                 ),
                                 // oooooooooooooo END - TITLE oooooooooooooooo
-
-                                Expanded(child: SizedBox()),
 
                                 // oooooooooooooo MODIFY oooooooooooooo 
                                 IconButton(

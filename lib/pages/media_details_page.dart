@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:first_project/core/themes/color_palette.dart';
-import 'package:first_project/core/widgets/media_list/media_list_controller.dart';
+import 'package:first_project/themes/color_palette.dart';
+import 'package:first_project/controllers/media_controller.dart';
 import 'package:first_project/models/media.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -231,7 +231,7 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
     @override
   Widget build(BuildContext context) {
     
-    final MediaListController controller = Provider.of<MediaListController>(context);
+    final MediaController controller = Provider.of<MediaController>(context);
 
     return Container(
 
