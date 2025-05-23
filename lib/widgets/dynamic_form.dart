@@ -1,5 +1,6 @@
 // import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
 
+import 'package:first_project/widgets/picker_field.dart';
 import 'package:flutter/material.dart';
 
 
@@ -10,6 +11,7 @@ enum FormFieldType {
   number,
   dropdown,
   textarea,
+  picker,
 }
 
 
@@ -345,6 +347,28 @@ class DynamicFormPageState extends State<DynamicFormPage> {
                     },
                 );
             // oooooooooooooooooo END - DOPDOWN oooooooooooooooooo
+
+
+            // ooooooooooooooo PICKER ooooooooooooooooo
+            case FormFieldType.picker:
+                return PickerField(
+                    textController: _controllers[formObject.id],
+
+                    label: formObject.title,
+                    isRequired: formObject.isRequired,
+
+                    hintText: formObject.hint,
+                    options: formObject.options ?? [],
+                    initialValue: formObject.initialValue, 
+
+                    errorText: _errors[formObject.id],
+
+                    foregroundColor: Theme.of(context).colorScheme.onSurface,
+                    backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+                    foregroundHighColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                );
+
+            // ooooooooooooooo END - PICKER ooooooooooooooooo
         }
     }
 // %%%%%%%%%%%%%%%%%%%%% END - FIELD WIDGET %%%%%%%%%%%%%%%%%%%%%

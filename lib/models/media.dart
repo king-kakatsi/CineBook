@@ -1,12 +1,14 @@
 import 'dart:convert';
 
-// ignore: depend_on_referenced_packages
+
 import 'package:json_annotation/json_annotation.dart';
 import 'package:hive/hive.dart';
 part 'media.g.dart';
 
 
-// @@@@@@@@@@@@@@@ MEDIA TYPE ENUM @@@@@@@@@@@@@@@@@
+// @@@@@@@@@@@@@@@ ENUMS @@@@@@@@@@@@@@@@@
+
+// %%%%%%%%%%%%%% MEDIA TYPE %%%%%%%%%%%%%%%%
 @HiveType(typeId: 0)
 @JsonEnum(alwaysCreate: true)
 enum Mediatype {
@@ -18,14 +20,128 @@ enum Mediatype {
   @JsonValue('anime')
   anime,
 }
-// @@@@@@@@@@@@@@@ END - MEDIA TYPE ENUM @@@@@@@@@@@@@@@@@
+// %%%%%%%%%%%%%% END - MEDIA TYPE %%%%%%%%%%%%%%%%
+
+
+
+
+// %%%%%%%%%%%%%%%%% MEDIA GENRE %%%%%%%%%%%%%%%
+@HiveType(typeId: 1)
+@JsonEnum(alwaysCreate: true)
+enum MediaGenre {
+    @HiveField(0)
+    @JsonValue('action')
+    action,
+
+    @HiveField(1)
+    @JsonValue('comedy')
+    comedy,
+
+    @HiveField(2)
+    @JsonValue('drama')
+    drama,
+
+    @HiveField(3)
+    @JsonValue('romance')
+    romance,
+
+    @HiveField(4)
+    @JsonValue('fantasy')
+    fantasy,
+
+    @HiveField(5)
+    @JsonValue('adventure')
+    adventure,
+
+    @HiveField(6)
+    @JsonValue('thriller')
+    thriller,
+
+    @HiveField(7)
+    @JsonValue('horror')
+    horror,
+
+    @HiveField(8)
+    @JsonValue('psychological')
+    psychological,
+
+    @HiveField(9)
+    @JsonValue('crime')
+    crime,
+
+    @HiveField(10)
+    @JsonValue('finance')
+    finance,
+
+    @HiveField(11)
+    @JsonValue('shonen')
+    shonen,
+
+    @HiveField(12)
+    @JsonValue('isekai')
+    isekai,
+
+    @HiveField(13)
+    @JsonValue('seinen')
+    seinen,
+
+    @HiveField(14)
+    @JsonValue('sports')
+    sports,
+
+    @HiveField(15)
+    @JsonValue('musical')
+    musical,
+
+    @HiveField(16)
+    @JsonValue('mecha')
+    mecha,
+
+    @HiveField(17)
+    @JsonValue('shojo')
+    shojo,
+}
+
+// %%%%%%%%%%%%%%%%% END - MEDIA GENRE %%%%%%%%%%%%%%%
+
+
+
+
+// %%%%%%%%%%%%%%% WATCH STATUS %%%%%%%%%%%%%%%%%%
+@HiveType(typeId: 2)
+@JsonEnum(alwaysCreate: true)
+enum WatchStatus {
+    @HiveField(0)
+    @JsonValue('watching')
+    watching,
+
+    @HiveField(1)
+    @JsonValue('completed')
+    completed,
+
+    @HiveField(2)
+    @JsonValue('onHold')
+    onHold,
+
+    @HiveField(3)
+    @JsonValue('dropped')
+    dropped,
+
+    @HiveField(4)
+    @JsonValue('planned')
+    planned,
+}
+
+// %%%%%%%%%%%%%%% END - WATCH STATUS %%%%%%%%%%%%%%%%%%
+
+// @@@@@@@@@@@@@@@ END - ENUMS @@@@@@@@@@@@@@@@@
 
 
 
 
 
 // @@@@@@@@@@@@@@@@@@ SEASON CLASS @@@@@@@@@@@@@@@@@@@@@
-@HiveType(typeId: 2)
+@HiveType(typeId: 3)
 @JsonSerializable()
 class Season {
     // %%%%%%%%%%%%%%%%%% PROPERTIES %%%%%%%%%%%%%%%%%%%%%
@@ -73,7 +189,7 @@ class Season {
 
 // @@@@@@@@@@@@@@@@@@ MEDIA CLASS @@@@@@@@@@@@@@@@@@@@@
 
-@HiveType(typeId: 3)
+@HiveType(typeId: 4)
 @JsonSerializable(explicitToJson: true)
 class Media {
 
@@ -85,40 +201,47 @@ class Media {
     late Mediatype mediaType;
 
     @HiveField(2)
-    late String title;
+    late MediaGenre? mediaGenre;
 
     @HiveField(3)
-    late String description;
+    late WatchStatus? watchStatus;
 
     @HiveField(4)
-    late String imageUrl;
+    late String title;
 
     @HiveField(5)
-    late String imagePath;
+    late String description;
 
     @HiveField(6)
-    late double? rate;
+    late String imageUrl;
 
     @HiveField(7)
-    late int? numberOfSeasons;
+    late String imagePath;
 
     @HiveField(8)
-    late List<Season>? seasons;
+    late double? rate;
 
     @HiveField(9)
-    late String searchFinder;
+    late int? numberOfSeasons;
 
     @HiveField(10)
-    late DateTime creationDate;
+    late List<Season>? seasons;
 
     @HiveField(11)
-    late DateTime lastModificationDate;
+    late String searchFinder;
 
     @HiveField(12)
-    late int? currentSeasonIndex;
+    late DateTime creationDate;
 
     @HiveField(13)
+    late DateTime lastModificationDate;
+
+    @HiveField(14)
+    late int? currentSeasonIndex;
+
+    @HiveField(15)
     late int? currentEpisodeIndex;
+
 
     // %%%%%%%%%%%%%%%%%% END - PROPERTIES %%%%%%%%%%%%%%%%%%%%%
 

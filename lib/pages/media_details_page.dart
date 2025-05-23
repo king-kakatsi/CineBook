@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:first_project/extensions/enum_extensions.dart';
 import 'package:first_project/themes/color_palette.dart';
 import 'package:first_project/controllers/media_controller.dart';
 import 'package:first_project/models/media.dart';
@@ -380,7 +381,11 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
 
                                                         child: IconButton(
                                                             onPressed: () => controller.goToEditMedia(context, widget.media),
-                                                            icon: Icon(Icons.edit),
+
+                                                            icon: Icon(
+                                                                Icons.edit, 
+                                                                color: Colors.white,
+                                                            ),
                                                         ),
                                                     ),
                                                     // ---------- END - MODIFY ------------- 
@@ -407,8 +412,12 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
                                                         // backgroundColor: AppColors.deepVineRed,
 
                                                         child: IconButton(
-                                                            onPressed: () => controller.deleteInList(context, widget.media), 
-                                                            icon: Icon(Icons.delete),
+                                                            onPressed: () => controller.deleteFromDetailsPage(context, widget.media), 
+
+                                                            icon: Icon(
+                                                                Icons.delete,
+                                                                color: Colors.white,
+                                                            ),
                                                         ),
                                                     ), 
                                                     // ------------- END - DELETE -----------
@@ -429,6 +438,7 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
                                     duration: Duration(milliseconds:  _animationDuration),
 
                                     child: Container(
+                                        width: double.infinity,
                                         height: MediaQuery.of(context).size.height * .6,
                                         margin: EdgeInsets.only(top: 10),
 
@@ -464,6 +474,30 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
                                                 crossAxisAlignment: CrossAxisAlignment.start,
 
                                                 children: [
+
+                                                    // --------------- GENRE ---------------
+                                                    if (widget.media.mediaGenre != null)
+                                                        Text(
+                                                            "Genre: ${widget.media.mediaGenre?.formattedName}",
+                                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                                color: Theme.of(context).colorScheme.onSurface,
+                                                                fontWeight: FontWeight.w600,
+                                                            ), 
+                                                        ),
+                                                    // --------------- END - GENRE ---------------
+
+                                                    // --------------- WATCH STATUS ---------------
+                                                    if (widget.media.watchStatus != null)
+                                                        Text(
+                                                            "Status: ${widget.media.watchStatus?.formattedName}",
+                                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                                color: Theme.of(context).colorScheme.onSurface,
+                                                                fontWeight: FontWeight.w600,
+                                                            ), 
+                                                        ),
+                                                    // --------------- END - WATCH STATUS ---------------
+
+                                                    SizedBox(height: 20),
 
                                                     // --------------- RATE ---------------
                                                     Text(

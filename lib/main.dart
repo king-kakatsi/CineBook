@@ -39,6 +39,8 @@ void main() async {
         Hive.init(appDocDir.path);
 
         Hive.registerAdapter(MediatypeAdapter());
+        Hive.registerAdapter(MediaGenreAdapter());
+        Hive.registerAdapter(WatchStatusAdapter());
         Hive.registerAdapter(SeasonAdapter());
         Hive.registerAdapter(MediaAdapter());
 
@@ -75,7 +77,7 @@ class AppRoot extends StatelessWidget {
         );
     }
 }
-// @@@@@@@@@@@@@@@@à END - APP ROOT @@@@@@@@@@@@@@@@@@@@@
+// @@@@@@@@@@@@@@@@ END - APP ROOT @@@@@@@@@@@@@@@@@@@@@
 
 
 

@@ -214,7 +214,7 @@ class MediaController extends ChangeNotifier {
                 if (reload) {
                     final tempPath = await MediaGetter.fetchImageFromUrl(media.imageUrl);
                     media.imagePath = tempPath ?? '';
-                    updateInList(media, boxName: thisBoxName);
+                    await updateInList(media, boxName: thisBoxName);
                 }
             }
         }
@@ -322,9 +322,9 @@ class MediaController extends ChangeNotifier {
 
 
     // %%%%%%%%%%%%%%%%%%%%%%%% DELETE MEDIA IN LIST %%%%%%%%%%%%%%%%%%
-    void deleteInList (BuildContext context, Media media) async {
+    Future<bool> deleteInList (BuildContext context, Media media) async {
         
-        var isAccepted = await HiveService.delete<Media>(
+        var isDeleted = await HiveService.delete<Media>(
             hiveBoxName, 
 
             () => Alert.display(
@@ -340,12 +340,14 @@ class MediaController extends ChangeNotifier {
             media.uniqueId
         );
 
-        if (isAccepted) {
+        if (isDeleted) {
             initialMediaList.removeWhere((m) => m.uniqueId == media.uniqueId);
             mediaList = [...initialMediaList];
             MediaGetter.deleteFromLocalDir(media.imagePath);
             notifyListeners();
         }  
+
+        return isDeleted;
     }
     // %%%%%%%%%%%%%%%%%%%%%%%% END - DELETE MEDIA IN LIST %%%%%%%%%%%%%%%%%%
 
@@ -353,10 +355,10 @@ class MediaController extends ChangeNotifier {
 
 
     // %%%%%%%%%%%%%%%%%%%%% DELETE MEDIA FROM DETAILS PAGE %%%%%%%%%%%%%%%%%%%%
-    void deleteFromDetailsPage (BuildContext context, Media media) {
+    void deleteFromDetailsPage (BuildContext context, Media media) async {
         
-        deleteInList(context, media);
-        Navigator.of(context).pop();
+        bool isDeleted = await deleteInList(context, media);
+        if (isDeleted) Navigator.of(context).pop();
     }
     // %%%%%%%%%%%%%%%%%%%%% END - DELETE MEDIA FROM DETAILS PAGE %%%%%%%%%%%%%%%%%%%%
 
@@ -364,7 +366,7 @@ class MediaController extends ChangeNotifier {
 
 
     // %%%%%%%%%%%%%%%%%%%%%%%% ADD MEDIA IN LIST %%%%%%%%%%%%%%%%%%
-    void addInList (Media media) async {
+    Future<bool> addInList (Media media) async {
 
         var done = await HiveService.addOrUpdate(
             hiveBoxName, 
@@ -378,7 +380,7 @@ class MediaController extends ChangeNotifier {
             sortBy(_currentSortIndex, sortButtons); // notifyListeners() is in this method
             notifyListeners();
         }
-        
+        return done;
     }
     // %%%%%%%%%%%%%%%%%%%%%%%% END - ADD MEDIA IN LIST %%%%%%%%%%%%%%%%%%
 
@@ -386,7 +388,7 @@ class MediaController extends ChangeNotifier {
 
 
     // %%%%%%%%%%%%%%%%%%%%%%%% UPDATE MEDIA IN LIST %%%%%%%%%%%%%%%%%%
-    void updateInList (Media media, {String boxName = 'undefined'}) async {
+    Future<bool> updateInList (Media media, {String boxName = 'undefined'}) async {
 
         if (boxName == 'undefined') boxName = hiveBoxName;
         var done = await HiveService.addOrUpdate(
@@ -403,7 +405,8 @@ class MediaController extends ChangeNotifier {
                 mediaList = [...initialMediaList];
                 sortBy(_currentSortIndex, sortButtons); // notifyListeners() is in this method
             } 
-        }   
+        }  
+        return done; 
     }
     // %%%%%%%%%%%%%%%%%%%%%%%% END - UPDATE MEDIA IN LIST %%%%%%%%%%%%%%%%%%
 

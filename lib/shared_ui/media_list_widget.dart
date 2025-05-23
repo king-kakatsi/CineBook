@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:math';
+import 'package:first_project/extensions/enum_extensions.dart';
 import 'package:first_project/widgets/lottie_animator.dart';
 import 'package:first_project/widgets/media_carousel_card.dart';
 import 'package:first_project/widgets/toggle_button_group.dart';
@@ -372,65 +373,89 @@ class MediaListWidgetState extends State<MediaListWidget> with TickerProviderSta
                                                                   color: Theme.of(context).colorScheme.surfaceContainer,
                                   
                                                                   child: Column(
-                                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                  
-                                                                      children: [
-                                                                          // ---------- DESCRIPTION -------------
-                                                                          Text(
-                                                                              media.description,
-                                                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                                                  color: Theme.of(context).colorScheme.onSurface,
-                                                                              ), 
-                                  
-                                                                              overflow: TextOverflow.ellipsis,
-                                                                              maxLines: 6,
-                                                                          ),
-                                                                          // ---------- END - DESCRIPTION -------------
-                                  
-                                                                          SizedBox(height: 20),
-                                  
-                                                                          // --------------- RATE ---------------
-                                                                          Text(
-                                                                              "Your rating: ${media.rate ?? 'N/A'}",
-                                                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                                                  color: Theme.of(context).colorScheme.onSurface
-                                                                              ), 
-                                                                          ),
-                                                                          // --------------- END - RATE ---------------
-                                  
-                                                                          SizedBox(height: 20),
-                                  
-                                                                          // ---------- CURRENT SEASON AND EPISODE ---------
-                                                                          if (media.currentSeasonIndex != null || media.currentEpisodeIndex != null)
-                                                                              Text(
-                                                                                  "Where you are:",
-                                                                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                                                                      fontSize: 14
-                                                                                  ), 
-                                                                              ),
-                                  
-                                                                          // ________ CURENT SEASON
-                                                                          if (media.currentSeasonIndex != null)
-                                                                              Text(
-                                                                                  "Season ${media.currentSeasonIndex ?? '--'}",
-                                                                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                                                      color: Theme.of(context).colorScheme.onSurface
-                                                                                  ), 
-                                                                              ),
-                                                                          // ________ END - CURENT SEASON
-                                  
-                                                                          // _________ CURRENT EPISODE 
-                                                                          if (media.currentEpisodeIndex != null)
-                                                                              Text(
-                                                                                  "Episode: ${media.currentEpisodeIndex ?? '--'}",
-                                                                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                                                      color: Theme.of(context).colorScheme.onSurface
-                                                                                  ), 
-                                                                              ),
-                                                                          // _________ END - CURRENT EPISODE 
-                                  
-                                                                          // ---------- CURRENT SEASON AND EPISODE ---------
+                                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                    
+                                                                        children: [
+                                                                            // ---------- DESCRIPTION -------------
+                                                                            Text(
+                                                                                media.description,
+                                                                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                                                    color: Theme.of(context).colorScheme.onSurface,
+                                                                                ), 
+                                    
+                                                                                overflow: TextOverflow.ellipsis,
+                                                                                maxLines: 4,
+                                                                            ),
+                                                                            // ---------- END - DESCRIPTION -------------
+                                    
+                                                                            SizedBox(height: 20),
+
+                                                                            // --------------- GENRE ---------------
+                                                                            if (media.mediaGenre != null)
+                                                                                Text(
+                                                                                    "Genre: ${media.mediaGenre?.formattedName}",
+                                                                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                                                        color: Theme.of(context).colorScheme.onSurface,
+                                                                                        fontWeight: FontWeight.w600,
+                                                                                    ), 
+                                                                                ),
+                                                                            // --------------- END - GENRE ---------------
+
+                                                                            // --------------- WATCH STATUS ---------------
+                                                                            if (media.watchStatus != null)
+                                                                                Text(
+                                                                                    "Status: ${media.watchStatus?.formattedName}",
+                                                                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                                                        color: Theme.of(context).colorScheme.onSurface,
+                                                                                        fontWeight: FontWeight.w600,
+                                                                                    ), 
+                                                                                ),
+                                                                            // --------------- END - WATCH STATUS ---------------
+
+                                                                            SizedBox(height: 20),
+                                    
+                                                                            // --------------- RATE ---------------
+                                                                            Text(
+                                                                                "Your rating: ${media.rate ?? 'N/A'}",
+                                                                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                                                    color: Theme.of(context).colorScheme.onSurface
+                                                                                ), 
+                                                                            ),
+                                                                            // --------------- END - RATE ---------------
+                                    
+                                                                            SizedBox(height: 20),
+                                    
+                                                                            // ---------- CURRENT SEASON AND EPISODE ---------
+                                                                            if (media.currentSeasonIndex != null || media.currentEpisodeIndex != null)
+                                                                                Text(
+                                                                                    "Where you are:",
+                                                                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                                                        fontSize: 14
+                                                                                    ), 
+                                                                                ),
+                                    
+                                                                            // ________ CURENT SEASON
+                                                                            if (media.currentSeasonIndex != null)
+                                                                                Text(
+                                                                                    "Season ${media.currentSeasonIndex ?? '--'}",
+                                                                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                                                        color: Theme.of(context).colorScheme.onSurface
+                                                                                    ), 
+                                                                                ),
+                                                                            // ________ END - CURENT SEASON
+                                    
+                                                                            // _________ CURRENT EPISODE 
+                                                                            if (media.currentEpisodeIndex != null)
+                                                                                Text(
+                                                                                    "Episode: ${media.currentEpisodeIndex ?? '--'}",
+                                                                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                                                        color: Theme.of(context).colorScheme.onSurface
+                                                                                    ), 
+                                                                                ),
+                                                                            // _________ END - CURRENT EPISODE 
+                                    
+                                                                            // ---------- CURRENT SEASON AND EPISODE ---------
                                                                       ],
                                                                   ),
                                                               ),    

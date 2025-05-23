@@ -38,9 +38,6 @@ class HomePage extends StatefulWidget {
 
 
 
-
-
-
 // $$$$$$$$$$$$$$$$$$$ HOME PAGE - STATE $$$$$$$$$$$$$$$$$$$
 class HomePageState extends State<HomePage> {
 
@@ -85,6 +82,7 @@ class HomePageState extends State<HomePage> {
         return Scaffold(
             // ooooooooooooo APP BAR ooooooooooooooooo
             appBar: AppBar(
+                leading: Image.asset('assets/icon/icon.png'),
                 title: Text(
                     widget.title,
                     style: Theme.of(context).textTheme.headlineLarge,

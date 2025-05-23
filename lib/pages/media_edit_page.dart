@@ -1,3 +1,4 @@
+import 'package:first_project/extensions/enum_extensions.dart';
 import 'package:first_project/widgets/dynamic_form.dart';
 import 'package:first_project/widgets/lottie_animator.dart';
 import 'package:first_project/models/media.dart';
@@ -64,15 +65,19 @@ class MediaEditPageState extends State<MediaEditPage> {
         super.initState();
 
         _initialValues = {
+            'mediaType': widget.media?.mediaType.name,
             'title': widget.media?.title,
             'description': widget.media?.description,
             'imageUrl': widget.media?.imageUrl,
             'rate': widget.media?.rate.toString(),
-            'numberOfSeasons': widget.media?.numberOfSeasons.toString(),
             'currentSeasonIndex': widget.media?.currentSeasonIndex.toString(),
             'currentEpisodeIndex': widget.media?.currentEpisodeIndex.toString(),
-            'mediaType': widget.media?.mediaType.name,
         };
+
+        if (widget.media != null && widget.media!.mediaGenre != null) _initialValues['mediaGenre'] = widget.media!.mediaGenre!.formattedName;
+
+        if (widget.media != null && widget.media!.watchStatus != null) _initialValues['watchStatus'] = widget.media!.watchStatus!.formattedName;
+        
 
 
         _formObjects = [
@@ -86,6 +91,16 @@ class MediaEditPageState extends State<MediaEditPage> {
                 isRequired: true,
             ),
             FormObject(
+                id: 'mediaGenre',
+                title: 'Genre',
+                hint: 'Select the genre',
+                type: FormFieldType.picker,
+                options: MediaGenre.values.map((val) => val.formattedName).toList(),
+                widthFactor: 1.0,
+                initialValue: _initialValues['mediaGenre'],
+                isRequired: false,
+            ),
+            FormObject(
                 id: 'description',
                 title: 'Description',
                 hint: 'Enter the media description',
@@ -93,6 +108,16 @@ class MediaEditPageState extends State<MediaEditPage> {
                 widthFactor: 1.0,
                 initialValue: _initialValues['description'],
                 isRequired: true,
+            ),
+            FormObject(
+                id: 'watchStatus',
+                title: 'Watch Status',
+                hint: 'Select the watch status',
+                type: FormFieldType.picker,
+                options: WatchStatus.values.map((val) => val.formattedName).toList(),
+                widthFactor: 1.0,
+                initialValue: _initialValues['watchStatus'],
+                isRequired: false,
             ),
             FormObject(
                 id: 'imageUrl',
@@ -172,11 +197,17 @@ class MediaEditPageState extends State<MediaEditPage> {
                 newMedia.uniqueId = Uuid().v4();
                 newMedia.currentSeasonIndex = int.tryParse(results['currentSeasonIndex'] ?? "");
                 newMedia.currentEpisodeIndex = int.tryParse(results['currentEpisodeIndex'] ?? '');
+
+
+                newMedia.mediaGenre = enumFromFormatted<MediaGenre>(MediaGenre.values, results['mediaGenre'] ?? '');
+                newMedia.watchStatus = enumFromFormatted<WatchStatus>(WatchStatus.values, results['watchStatus'] ?? '');
+
                 newMedia.description = results['description'] ?? '';
                 newMedia.rate = double.tryParse(results['rate'] ?? '');
 
                 // ============ FETCH THE IMAGE ================
                 newMedia.imageUrl = results['imageUrl'] ?? '';
+                newMedia.imagePath = '';
                 if (newMedia.imageUrl != '' && newMedia.imageUrl.isNotEmpty){
                     final tempPath = await MediaGetter.fetchImageFromUrl(newMedia.imageUrl);
                     newMedia.imagePath = tempPath ?? '';
@@ -187,21 +218,26 @@ class MediaEditPageState extends State<MediaEditPage> {
                 newMedia.lastModificationDate = DateTime.now();
                 newMedia.generateSearchFinder();
                 
-                mediaController.addInList(newMedia);
+                done = await mediaController.addInList(newMedia);
 
                 // °°°°°°°°°°°°°°° END - CREATE NEW MEDIA °°°°°°°°°°°°°°°° 
 
             } else {
                 // °°°°°°°°°°°°°° MODIFY EXISTING MEDIA °°°°°°°°°°°°°°°°°°
-                final prevUrl = '${widget.media!.imageUrl}';
-                final prevPath = '${widget.media!.imagePath}';
+                final prevUrl = widget.media!.imageUrl;
+                final prevPath = widget.media!.imagePath;
                 widget.media!
                     ..title = results['title'] ?? widget.media!.title
                     ..description = results['description'] ?? widget.media!.description
                     ..imageUrl = results['imageUrl'] ?? widget.media!.imageUrl
                     ..rate = double.tryParse(results['rate'] ?? '')
+
                     ..currentSeasonIndex = int.tryParse(results['currentSeasonIndex'] ?? "")
                     ..currentEpisodeIndex = int.tryParse(results['currentEpisodeIndex'] ?? '')
+
+                    ..mediaGenre = enumFromFormatted<MediaGenre>(MediaGenre.values, results['mediaGenre'] ?? '')
+                    ..watchStatus = enumFromFormatted<WatchStatus>(WatchStatus.values, results['watchStatus'] ?? '')
+
                     ..mediaType = mediaType;
                 
                 widget.media!.lastModificationDate = DateTime.now();
@@ -219,7 +255,7 @@ class MediaEditPageState extends State<MediaEditPage> {
                 // ============ END - FETCH THE IMAGE ================
 
                 widget.media!.generateSearchFinder();
-                mediaController.updateInList(widget.media!);
+                done = await mediaController.updateInList(widget.media!);
                 // °°°°°°°°°°°°°° END - MODIFY EXISTING MEDIA °°°°°°°°°°°°°°°°°°
             }
 
