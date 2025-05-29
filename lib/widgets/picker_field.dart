@@ -18,6 +18,8 @@ class PickerField extends StatefulWidget {
     final void Function(String)? onChanged;
     TextEditingController? textController;
     final String? errorText;
+    final FocusNode? focusNode;
+    final VoidCallback? onTap; 
     // %%%%%%%%%%%%%%%%% END - PROPERTIES %%%%%%%%%%%%%%%%%
 
 
@@ -38,6 +40,8 @@ class PickerField extends StatefulWidget {
         this.foregroundHighColor,
         this.backgroundColor,
         this.isRequired = true,
+        this.focusNode,
+        this.onTap,
     });
     // %%%%%%%%%%%%%%%%% END - PROPERTIES %%%%%%%%%%%%%%%%%
 
@@ -150,11 +154,15 @@ class _PickerFieldState extends State<PickerField> {
         final Color foregroundHigh = widget.foregroundHighColor ?? scheme.surfaceContainerHighest;
 
         return TextField(
-                controller: widget.textController,
-                readOnly: true,
-                onTap: _showPicker,
-                
-                decoration: InputDecoration(
+            focusNode: widget.focusNode,
+            controller: widget.textController,
+            readOnly: true,
+            onTap: () {
+                _showPicker();
+                if (widget.onTap != null) widget.onTap!();
+            } ,
+            
+            decoration: InputDecoration(
                     
                     suffixIcon: Icon(
                         Icons.keyboard_arrow_down_rounded,

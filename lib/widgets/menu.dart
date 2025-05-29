@@ -26,7 +26,6 @@ class MenuOption {
 
 
 
-
 // @@@@@@@@@@@@ STATEFUL @@@@@@@@@@@@@@@@
 
 // ignore: must_be_immutable
@@ -58,7 +57,6 @@ class MyMenu extends StatefulWidget {
     // %%%%%%%%%%%%% END - CREATE STATE %%%%%%%%%%%%%%%%%
 }
 // @@@@@@@@@@@@ END - STATEFUL @@@@@@@@@@@@@@@@
-
 
 
 

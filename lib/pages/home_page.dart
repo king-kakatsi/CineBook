@@ -5,7 +5,7 @@ import 'package:first_project/pages/series_page.dart';
 import 'package:flutter/material.dart';
 // import 'package:provider/provider.dart';
 
-// $$$$$$$$$$$$$$$$$$$ HOME PAGE - STATEFUL $$$$$$$$$$$$$$$$$$$
+// @@@@@@@@@@@@@@@@@@ HOME PAGE - STATEFUL @@@@@@@@@@@@@@@@@@
 class HomePage extends StatefulWidget {
 
   // %%%%%%%%%%%%%%%%%%%%%%% PROPERTIES %%%%%%%%%%%%%%%%%%%%%%%
@@ -32,13 +32,13 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => HomePageState();
     // %%%%%%%%%%%%%%%%%%%% END - CREATE STATE %%%%%%%%%%%%%%%%%%%
 }
-// $$$$$$$$$$$$$$$$$$$ END - HOME PAGE - STATEFUL $$$$$$$$$$$$$$$$$$$
+// @@@@@@@@@@@@@@@@@@ END - HOME PAGE - STATEFUL @@@@@@@@@@@@@@@@@@
 
 
 
 
 
-// $$$$$$$$$$$$$$$$$$$ HOME PAGE - STATE $$$$$$$$$$$$$$$$$$$
+// @@@@@@@@@@@@@@@@@@ HOME PAGE - STATE @@@@@@@@@@@@@@@@@@
 class HomePageState extends State<HomePage> {
 
     // %%%%%%%%%%%%%%%%%%%%%%% PROPERTIES %%%%%%%%%%%%%%%%%%%%%%%
@@ -166,4 +166,4 @@ class HomePageState extends State<HomePage> {
     }
     // %%%%%%%%%%%%%%%%%%%% END - BUILD %%%%%%%%%%%%%%%%%%%%
 }
-// $$$$$$$$$$$$$$$$$$$ END - HOME PAGE - STATE $$$$$$$$$$$$$$$$$$$
+// @@@@@@@@@@@@@@@@@@ END - HOME PAGE - STATE @@@@@@@@@@@@@@@@@@

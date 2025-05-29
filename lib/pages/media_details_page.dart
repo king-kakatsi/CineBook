@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:first_project/extensions/enum_extensions.dart';
+import 'package:first_project/services/tts_service.dart';
 import 'package:first_project/themes/color_palette.dart';
 import 'package:first_project/controllers/media_controller.dart';
 import 'package:first_project/models/media.dart';
@@ -71,7 +72,9 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
     late double _currentBottomSheetOpacity;
 
     bool _isDragging = false;
-
+    
+    late final TtsService _tts;
+    bool _isReadingSynopsis = false;
 
     late final int _animationDuration;
     final GlobalKey bottomSheetKey = GlobalKey();
@@ -82,10 +85,11 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
 
     // %%%%%%%%%%%%%%%%%%% INIT STATE %%%%%%%%%%%%%%%%%%%%%%
     @override
-  void initState() {
-    super.initState();
-    initAnimations(context);
-  }
+    void initState() {
+        super.initState();
+        initTts();
+        initAnimations(context);
+    }
     // %%%%%%%%%%%%%%%%%%% END - INIT STATE %%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -218,11 +222,39 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
 
 
 
+    // %%%%%%%%%%%%%%%%%%% INIT TTS %%%%%%%%%%%%%%%%%
+    void initTts () {
+        _tts = TtsService(
+            onStart: () => setState(() {_isReadingSynopsis = true;}),
+            onCompletion: () => setState(() {_isReadingSynopsis = false;}),
+            onCancel: () => setState(() {_isReadingSynopsis = false;}),
+        );
+    }
+    // %%%%%%%%%%%%%%%%%%% END - INIT TTS %%%%%%%%%%%%%%%%%
+
+
+
+
+    // %%%%%%%%%%%%%%%%%%% READ OR STOP SYNOPSIS %%%%%%%%%%%%%%%%%
+    void readOrStopSynopsis () async {
+
+        if (_isReadingSynopsis) {
+            _tts.stop();
+        } else {
+            _tts.read(widget.media.description);
+        }      
+    }
+    // %%%%%%%%%%%%%%%%%%% END - READ OR STOP SYNOPSIS %%%%%%%%%%%%%%%%%
+
+
+
+
     // %%%%%%%%%%%%%%%%%%%%%%%%% DISPOSE %%%%%%%%%%%%%%%%%%
     @override void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
+        _animationController.dispose();
+        _tts.stop();
+        super.dispose();
+    }
     // %%%%%%%%%%%%%%%%%%%%%%%%% END - DISPOSE %%%%%%%%%%%%%%%%%%
 
 
@@ -230,96 +262,93 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
 
     // %%%%%%%%%%%%%%%%%%% BUILD %%%%%%%%%%%%%%%%%%%%%
     @override
-  Widget build(BuildContext context) {
-    
-    final MediaController controller = Provider.of<MediaController>(context);
+    Widget build(BuildContext context) {
+        final MediaController controller = Provider.of<MediaController>(context);
 
-    return Container(
+        return Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
 
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
+            // °°°°°°°°°°°°°°°°° IMAGE AS BACKGROUND FOR THE CONTAINER °°°°°°°°°°°
+            decoration: BoxDecoration(
+                image: DecorationImage(
 
-        // °°°°°°°°°°°°°°°°° IMAGE AS BACKGROUND FOR THE CONTAINER °°°°°°°°°°°
-        decoration: BoxDecoration(
-            image: DecorationImage(
+                    image: widget.media.imagePath.isEmpty? 
+                        NetworkImage(widget.media.imageUrl) as ImageProvider : 
+                        FileImage(File(widget.media.imagePath)),
 
-                image: widget.media.imagePath.isEmpty? 
-                    NetworkImage(widget.media.imageUrl) as ImageProvider : 
-                    FileImage(File(widget.media.imagePath)),
+                    fit: BoxFit.cover
+                )
+            ),
+            // °°°°°°°°°°°°°°°°° END - IMAGE AS BACKGROUND FOR THE CONTAINER °°°°°°°°°°°
 
-                fit: BoxFit.cover
-            )
-        ),
-        // °°°°°°°°°°°°°°°°° END - IMAGE AS BACKGROUND FOR THE CONTAINER °°°°°°°°°°°
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
 
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-
-                // °°°°°°°°°°°°°°°°°° POP BUTTON °°°°°°°°°°°°°°°°°
-                Container(
-                    margin: EdgeInsets.only(
-                        top: 50,
-                        left: 15,
-                    ),
-
-                    padding: EdgeInsets.only(
-                        left: 10,
-                        top: 3,
-                        bottom: 3,
-                        ),
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary.withValues(alpha: .8),
-                        borderRadius: BorderRadius.circular(15),
-                    ),
-
-                    child: IconButton(
-                        onPressed: () => Navigator.of(context).pop(), 
-
-                        icon: Icon(
-                            Icons.arrow_back_ios,
-                            size: 30,
-                            color: Theme.of(context).colorScheme.onPrimary,
-                        ),
-                    ),
-                ),
-                // °°°°°°°°°°°°°°°°°° END - POP BUTTON °°°°°°°°°°°°°°°°°
-
-                Expanded(child: SizedBox()),
-
-
-
-                // °°°°°°°°°°°°°°° INFORATIONS °°°°°°°°°°°°°°°°°°
-
-                Transform(
-                    key: bottomSheetKey,
-                    transform: Matrix4.identity()
-                        ..translate(
-                            0.0, 
-                            _isDragging? _currentBottomSheetPosY : _bottomSheetTransalteYAnim.value
+                    // °°°°°°°°°°°°°°°°°° POP BUTTON °°°°°°°°°°°°°°°°°
+                    Container(
+                        margin: EdgeInsets.only(
+                            top: 50,
+                            left: 15,
                         ),
 
-                    child: GestureDetector(
-                        onPanUpdate: dragBottomSheet,
-                        onPanEnd: endDraggingBottomSheet,
+                        padding: EdgeInsets.only(
+                            left: 10,
+                            top: 3,
+                            bottom: 3,
+                            ),
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary.withValues(alpha: .8),
+                            borderRadius: BorderRadius.circular(15),
+                        ),
 
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                        child: IconButton(
+                            onPressed: () => Navigator.of(context).pop(), 
 
-                                SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    padding: EdgeInsets.only(bottom: 10,),
+                            icon: Icon(
+                                Icons.arrow_back_ios,
+                                size: 30,
+                                color: Theme.of(context).colorScheme.onPrimary,
+                            ),
+                        ),
+                    ),
+                    // °°°°°°°°°°°°°°°°°° END - POP BUTTON °°°°°°°°°°°°°°°°°
 
-                                    child: Row(
+                    Expanded(child: SizedBox()),
+
+
+
+                    // °°°°°°°°°°°°°°° INFORATIONS °°°°°°°°°°°°°°°°°°
+
+                    Transform(
+                        key: bottomSheetKey,
+                        transform: Matrix4.identity()
+                            ..translate(
+                                0.0, 
+                                _isDragging? _currentBottomSheetPosY : _bottomSheetTransalteYAnim.value
+                            ),
+
+                        child: GestureDetector(
+                            onPanUpdate: dragBottomSheet,
+                            onPanEnd: endDraggingBottomSheet,
+
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+
+                                    Row(
                                         mainAxisAlignment: MainAxisAlignment.start,
                                         children: [
 
                                             // ============== TITLE ===============
                                             Container(
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 50,
-                                                    vertical: 10,
+                                                width: MediaQuery.of(context).size.width * .5,
+                                                padding: EdgeInsets.only(
+                                                    left: 15,
+                                                    top: 10,
+                                                    right: 20,
+                                                    bottom: 10
                                                 ),
 
                                                 decoration: BoxDecoration(
@@ -341,13 +370,17 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
                                                     ],
                                                 ),
 
-                                                child: Text(
-                                                    widget.media.title,
+                                                child: SingleChildScrollView(
+                                                    scrollDirection: Axis.horizontal,
 
-                                                    style: TextStyle(
-                                                        fontSize: 16,
-                                                        color: Theme.of(context).colorScheme.onPrimary,
-                                                        decoration: TextDecoration.none,
+                                                    child: Text(
+                                                        widget.media.title,
+                                                        maxLines: 1,
+                                                        style: TextStyle(
+                                                            fontSize: 16,
+                                                            color: Theme.of(context).colorScheme.onPrimary,
+                                                            decoration: TextDecoration.none,
+                                                        ),
                                                     ),
                                                 ),
                                             ),
@@ -392,6 +425,37 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
 
                                                     SizedBox(width: 10,),
 
+                                                    // ---------- READ/STOP SYNOPSIS -------------- 
+                                                    Container(
+                                                        decoration: BoxDecoration(
+                                                            color: Theme.of(context).colorScheme.primary,
+                                                            borderRadius: BorderRadius.circular(100),
+
+                                                            boxShadow: [
+                                                                BoxShadow(
+                                                                    blurRadius: 1,
+                                                                    offset: Offset(5, 5),
+                                                                    color: Colors.black38,
+                                                                ),
+                                                            ],
+                                                        ),
+
+                                                        child: IconButton(
+                                                            onPressed: () => readOrStopSynopsis(),
+
+                                                            icon: Icon(
+                                                                _isReadingSynopsis ? 
+                                                                    Icons.stop_rounded : 
+                                                                    Icons.play_arrow_rounded, 
+
+                                                                color: Colors.white,
+                                                            ),
+                                                        ),
+                                                    ),
+                                                    // ---------- END - READ/STOP SYNOPSIS --------- 
+
+                                                    SizedBox(width: 10,),
+
                                                     // ---------- DELETE ---------------- 
                                                     Container(
                                                         decoration: BoxDecoration(
@@ -426,146 +490,145 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
                                             // ================ END - ACTION BUTTONS =============
                                         ],
                                     ),
-                                ),
-                            
+                                
 
-                                // =============== DESCRIPTION _ RATE _ CURRENT SEASON AND EPISODE ===============
-                                AnimatedOpacity(
-                                    opacity: _isDragging? 
-                                    _currentBottomSheetOpacity : 
-                                    _bottomSheetOpacityAnim.value, 
+                                    // =============== DESCRIPTION _ RATE _ CURRENT SEASON AND EPISODE ===============
+                                    AnimatedOpacity(
+                                        opacity: _isDragging? 
+                                        _currentBottomSheetOpacity : 
+                                        _bottomSheetOpacityAnim.value, 
 
-                                    duration: Duration(milliseconds:  _animationDuration),
+                                        duration: Duration(milliseconds:  _animationDuration),
 
-                                    child: Container(
-                                        width: double.infinity,
-                                        height: MediaQuery.of(context).size.height * .6,
-                                        margin: EdgeInsets.only(top: 10),
+                                        child: Container(
+                                            width: double.infinity,
+                                            height: MediaQuery.of(context).size.height * .6,
+                                            margin: EdgeInsets.only(top: 10),
 
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: 30,
-                                            horizontal: 15
-                                        ),
-
-                                        decoration: BoxDecoration(
-
-                                            borderRadius: BorderRadius.only(
-                                                topRight: Radius.circular(80),
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 30,
+                                                horizontal: 15
                                             ),
 
-                                            // color: Theme.of(context).colorScheme.primary,
-                                            gradient: LinearGradient(
-                                                begin: Alignment.topCenter,
-                                                end: Alignment.bottomCenter,
-                                                colors: [
-                                                    Theme.of(context).colorScheme.primary,
-                                                    Theme.of(context).colorScheme.surfaceContainer
-                                                ],
-                                                stops: [0.0, 1.0],
+                                            decoration: BoxDecoration(
+
+                                                borderRadius: BorderRadius.only(
+                                                    topRight: Radius.circular(80),
+                                                ),
+
+                                                // color: Theme.of(context).colorScheme.primary,
+                                                gradient: LinearGradient(
+                                                    begin: Alignment.topCenter,
+                                                    end: Alignment.bottomCenter,
+                                                    colors: [
+                                                        Theme.of(context).colorScheme.primary,
+                                                        Theme.of(context).colorScheme.surfaceContainer
+                                                    ],
+                                                    stops: [0.0, 1.0],
+                                                ),
                                             ),
-                                        ),
 
-                                        child: SingleChildScrollView(
-                                            scrollDirection: Axis.vertical,
+                                            child: SingleChildScrollView(
+                                                scrollDirection: Axis.vertical,
 
-                                            child: Column(
+                                                child: Column(
 
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
 
-                                                children: [
+                                                    children: [
 
-                                                    // --------------- GENRE ---------------
-                                                    if (widget.media.mediaGenre != null)
+                                                        // --------------- GENRE ---------------
+                                                        if (widget.media.mediaGenre != null)
+                                                            Text(
+                                                                "Genre: ${widget.media.mediaGenre?.formattedName}",
+                                                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                                    color: Theme.of(context).colorScheme.onSurface,
+                                                                    fontWeight: FontWeight.w600,
+                                                                ), 
+                                                            ),
+                                                        // --------------- END - GENRE ---------------
+
+                                                        // --------------- WATCH STATUS ---------------
+                                                        if (widget.media.watchStatus != null)
+                                                            Text(
+                                                                "Status: ${widget.media.watchStatus?.formattedName}",
+                                                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                                    color: Theme.of(context).colorScheme.onSurface,
+                                                                    fontWeight: FontWeight.w600,
+                                                                ), 
+                                                            ),
+                                                        // --------------- END - WATCH STATUS ---------------
+
+                                                        SizedBox(height: 20),
+
+                                                        // --------------- RATE ---------------
                                                         Text(
-                                                            "Genre: ${widget.media.mediaGenre?.formattedName}",
-                                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                                color: Theme.of(context).colorScheme.onSurface,
-                                                                fontWeight: FontWeight.w600,
-                                                            ), 
-                                                        ),
-                                                    // --------------- END - GENRE ---------------
-
-                                                    // --------------- WATCH STATUS ---------------
-                                                    if (widget.media.watchStatus != null)
-                                                        Text(
-                                                            "Status: ${widget.media.watchStatus?.formattedName}",
-                                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                                color: Theme.of(context).colorScheme.onSurface,
-                                                                fontWeight: FontWeight.w600,
-                                                            ), 
-                                                        ),
-                                                    // --------------- END - WATCH STATUS ---------------
-
-                                                    SizedBox(height: 20),
-
-                                                    // --------------- RATE ---------------
-                                                    Text(
-                                                        "Your rating: ${widget.media.rate ?? 'N/A'}",
-                                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                            color: Theme.of(context).colorScheme.onSurface
-                                                        ), 
-                                                    ),
-                                                    // --------------- END - RATE ---------------
-
-                                                    SizedBox(height: 20),
-
-                                                    // ---------- CURRENT SEASON AND EPISODE ---------
-                                                    if (widget.media.currentSeasonIndex != null || widget.media.currentEpisodeIndex != null)
-                                                        Text(
-                                                            "Where you are:",
-                                                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                                                fontSize: 14
-                                                            ), 
-                                                        ),
-
-                                                    // ________ CURENT SEASON
-                                                    if (widget.media.currentSeasonIndex != null)
-                                                        Text(
-                                                            "Season ${widget.media.currentSeasonIndex ?? '--'}",
+                                                            "Your rating: ${widget.media.rate ?? 'N/A'}",
                                                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                                                 color: Theme.of(context).colorScheme.onSurface
                                                             ), 
                                                         ),
-                                                    // ________ END - CURENT SEASON
+                                                        // --------------- END - RATE ---------------
 
-                                                    // _________ CURRENT EPISODE 
-                                                    if (widget.media.currentEpisodeIndex != null)
+                                                        SizedBox(height: 20),
+
+                                                        // ---------- CURRENT SEASON AND EPISODE ---------
+                                                        if (widget.media.currentSeasonIndex != null || widget.media.currentEpisodeIndex != null)
+                                                            Text(
+                                                                "Where you are:",
+                                                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                                    fontSize: 14
+                                                                ), 
+                                                            ),
+
+                                                        // ________ CURENT SEASON
+                                                        if (widget.media.currentSeasonIndex != null)
+                                                            Text(
+                                                                "Season ${widget.media.currentSeasonIndex ?? '--'}",
+                                                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                                    color: Theme.of(context).colorScheme.onSurface
+                                                                ), 
+                                                            ),
+                                                        // ________ END - CURENT SEASON
+
+                                                        // _________ CURRENT EPISODE 
+                                                        if (widget.media.currentEpisodeIndex != null)
+                                                            Text(
+                                                                "Episode: ${widget.media.currentEpisodeIndex ?? '--'}",
+                                                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                                    color: Theme.of(context).colorScheme.onSurface
+                                                                ), 
+                                                            ),
+                                                        // _________ END - CURRENT EPISODE 
+
+                                                        // ---------- CURRENT SEASON AND EPISODE ---------
+
+                                                        SizedBox(height: 20),
+
+                                                        // ---------- DESCRIPTION -------------
                                                         Text(
-                                                            "Episode: ${widget.media.currentEpisodeIndex ?? '--'}",
+                                                            widget.media.description,
                                                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                                color: Theme.of(context).colorScheme.onSurface
+                                                                color: Theme.of(context).colorScheme.onSurface,
                                                             ), 
                                                         ),
-                                                    // _________ END - CURRENT EPISODE 
-
-                                                    // ---------- CURRENT SEASON AND EPISODE ---------
-
-                                                    SizedBox(height: 20),
-
-                                                    // ---------- DESCRIPTION -------------
-                                                    Text(
-                                                        widget.media.description,
-                                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                            color: Theme.of(context).colorScheme.onSurface,
-                                                        ), 
-                                                    ),
-                                                    // ---------- END - DESCRIPTION -------------
-                                                ],
+                                                        // ---------- END - DESCRIPTION -------------
+                                                    ],
+                                                ),
                                             ),
                                         ),
-                                    ),
-                                ) 
-                                // =============== END - DESCRIPTION _ RATE _ CURRENT SEASON AND EPISODE ===============
-                            ],
+                                    ) 
+                                    // =============== END - DESCRIPTION _ RATE _ CURRENT SEASON AND EPISODE ===============
+                                ],
+                            ),
                         ),
                     ),
-                ),
-                // °°°°°°°°°°°°°°° END - INFORATIONS °°°°°°°°°°°°°°°°°°
-            ],
-        ),   
-    );
-  }
+                    // °°°°°°°°°°°°°°° END - INFORATIONS °°°°°°°°°°°°°°°°°°
+                ],
+            ),   
+        );
+    }
     // %%%%%%%%%%%%%%%%%%% END - BUILD %%%%%%%%%%%%%%%%%%%%%
 }
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ END - STATE OF STATEFUL WIDGET @@@@@@@@@@@@@@@@@@@@@@@@@

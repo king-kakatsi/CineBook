@@ -1,10 +1,14 @@
 import 'package:first_project/controllers/media_controller.dart';
+import 'package:first_project/extensions/enum_extensions.dart';
+import 'package:first_project/services/tts_service.dart';
 import 'package:first_project/themes/theme_viewmodel.dart';
 import 'package:first_project/widgets/lottie_animator.dart';
 import 'package:first_project/widgets/menu.dart';
 import 'package:first_project/pages/home_page.dart';
+import 'package:first_project/widgets/picker_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+
 
 
 
@@ -105,6 +109,16 @@ class RootPageState extends State<RootPage> with SingleTickerProviderStateMixin 
                 ),
             ),
             // oooooooooooooo END - EXPORT BACKUP ooooooooooooooooo
+
+
+            // oooooooooooooo CHANGE SPEECH LANGUAGE ooooooooooooooooo
+            MenuOption(
+                icon: Icons.multitrack_audio,
+                title: "Change Speech Language",
+
+                action: () async => await chooseSpeechLang("Speech Language"),
+            ),
+            // oooooooooooooo END - CHANGE SPEECH LANGUAGE ooooooooooooooooo
         ];
   }
     // %%%%%%%%%%%%%%%%%%%% END - INIT STATE %%%%%%%%%%%%%%%%%%%
@@ -132,6 +146,57 @@ class RootPageState extends State<RootPage> with SingleTickerProviderStateMixin 
 
 
 
+    // %%%%%%%%%%%%%%%%%%% CHOOSE TTS LANGUAGE %%%%%%%%%%%%%%%%%%%
+    Future<String?> chooseSpeechLang (
+        String title,
+    ) async {
+
+        String currentTtsLang = await TtsService.retrieveTtsLanguage();
+        return showDialog<String>(
+            context: context, 
+            barrierDismissible: true,
+
+            builder: (context) => AlertDialog(
+
+                title: Text(
+                    title,
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface
+                    ),     
+                ),
+
+                content: PickerField(
+                    label: "Choose Speech language", 
+                    hintText: currentTtsLang, 
+                    options: Languages.values.map((lang) => lang.formattedName).toList(),
+
+                    onChanged: (lang) async {
+                        currentTtsLang = lang;
+                        await TtsService.saveTtsLanguage(lang);
+                    },
+                ),
+
+                backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+                actions: [
+                    TextButton(
+                        onPressed: () => Navigator.of(context).pop(currentTtsLang), 
+                        child: Text(
+                            "OK",
+                            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                                color: Theme.of(context).colorScheme.onSurface
+                            ),
+                        )
+                    ),
+                ],
+
+            ),
+        );
+    }
+    // %%%%%%%%%%%%%%%%%%% END - CHOOSE TTS LANGUAGE %%%%%%%%%%%%%%%%%%%
+
+
+
+
     // %%%%%%%%%%%%%%%%%%%%%%%%% DISPOSE %%%%%%%%%%%%%%%%%%
     @override void dispose() {
     _animationController.dispose();
@@ -152,7 +217,8 @@ class RootPageState extends State<RootPage> with SingleTickerProviderStateMixin 
                 children: [
                     _lottieAnimator.builder(
                         lottieFilePath: "assets/lottie/loading_anim.json",  
-                        backgroundColor: Theme.of(context).colorScheme.onSurface, 
+                        backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+                        backgroundOpacity: .5, 
                         width: 100, 
                         height: 100,
                         pushTop: 200,

@@ -26,6 +26,7 @@ class AppTheme {
         onError: Colors.white, // Text on error color
         surface: AppColors.lightBackground, // Background color for surfaces (cards, etc.)
         onSurface: AppColors.lightText, // Text on surfaces
+        onSurfaceVariant: Colors.black,
         surfaceContainerHigh: AppColors.lightBorder,
         surfaceContainerHighest: AppColors.lightBorderHigh,
         surfaceContainer: AppColors.lightCard, 
@@ -79,6 +80,7 @@ class AppTheme {
         onError: Colors.white, // Text on error color
         surface: AppColors.darkBackground, // Background color for surfaces (cards, etc.)
         onSurface: AppColors.darkText, // Text on surfaces
+        onSurfaceVariant: Colors.white,
         surfaceContainerHigh: AppColors.darkBorder,
         surfaceContainerHighest: AppColors.darkBorderHigh,
         surfaceContainer: AppColors.darkCard,

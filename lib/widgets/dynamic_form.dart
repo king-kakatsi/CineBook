@@ -45,7 +45,6 @@ class FormObject {
 
 
 
-
 // @@@@@@@@@@@@@@@@@@@ DYNAMIC FORM PAGE - STATEFUL @@@@@@@@@@@@@@@@@@@
 
 class DynamicFormPage extends StatefulWidget {
@@ -53,6 +52,10 @@ class DynamicFormPage extends StatefulWidget {
     // %%%%%%%%%%%%%%%%%%%%%%% PROPERTIES %%%%%%%%%%%%%%%%%%%%%%%
     final List<FormObject> formObjects;
     final void Function(Map<String, String?> results)? onSubmit;
+    final double leftPadding;
+    final double topPadding;
+    final double rightPadding;
+    final double bottomPadding;
     // %%%%%%%%%%%%%%%%%%%%%%% END - PROPERTIES %%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -63,7 +66,11 @@ class DynamicFormPage extends StatefulWidget {
 
         super.key, 
         required this.formObjects,
-        this.onSubmit
+        this.onSubmit,
+        this.leftPadding = 0.0,
+        this.topPadding = 0.0,
+        this.rightPadding = 0.0,
+        this.bottomPadding = 0.0,
     });
   // %%%%%%%%%%%%%%%%%%% END - CONSTRUCTOR %%%%%%%%%%%%%%%%%%%%%
 
@@ -81,15 +88,13 @@ class DynamicFormPage extends StatefulWidget {
 
 
 
-
-
-
 // @@@@@@@@@@@@@@@@@@@ DYNAMIC FORM PAGE - STATE @@@@@@@@@@@@@@@@@@@
 class DynamicFormPageState extends State<DynamicFormPage> {
 
     // %%%%%%%%%%%%%%%%%%%%%%% PROPERTIES %%%%%%%%%%%%%%%%%%%%%%%
     final Map<String, TextEditingController> _controllers = {};
     final Map<String, String?> _errors = {};
+    TextEditingController? currentlyFocusedController;
     // %%%%%%%%%%%%%%%%%%%%%%% END - PROPERTIES %%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -183,6 +188,7 @@ class DynamicFormPageState extends State<DynamicFormPage> {
     // %%%%%%%%%%%%%%%%%%%%% FIELD WIDGET %%%%%%%%%%%%%%%%%%%%%
     Widget _fieldWidget (FormObject formObject) {
 
+        FocusNode focusNode = FocusNode();
         switch (formObject.type) {
 
             // oooooooooooooooooo TEXT FIELD oooooooooooooooooo
@@ -190,6 +196,8 @@ class DynamicFormPageState extends State<DynamicFormPage> {
             case FormFieldType.number:
                 return TextField(
                     controller: _controllers[formObject.id],
+                    focusNode: focusNode,
+                    onTap: () {currentlyFocusedController = _controllers[formObject.id];},
 
                     decoration: InputDecoration(
 
@@ -244,6 +252,8 @@ class DynamicFormPageState extends State<DynamicFormPage> {
             case FormFieldType.textarea:
                 return TextField(
                     controller: _controllers[formObject.id],
+                    focusNode: focusNode,
+                    onTap: () {currentlyFocusedController = _controllers[formObject.id];},
 
                     decoration: InputDecoration(
 
@@ -299,6 +309,8 @@ class DynamicFormPageState extends State<DynamicFormPage> {
             // oooooooooooooooooo DOPDOWN oooooooooooooooooo
             case FormFieldType.dropdown:
                 return DropdownButtonFormField(
+                    focusNode: focusNode,
+                    onTap: () {currentlyFocusedController = _controllers[formObject.id];},
 
                     decoration: InputDecoration(
                         labelText: formObject.title,
@@ -353,6 +365,8 @@ class DynamicFormPageState extends State<DynamicFormPage> {
             case FormFieldType.picker:
                 return PickerField(
                     textController: _controllers[formObject.id],
+                    focusNode: focusNode,
+                    onTap: () {currentlyFocusedController = null;},
 
                     label: formObject.title,
                     isRequired: formObject.isRequired,
@@ -383,7 +397,12 @@ class DynamicFormPageState extends State<DynamicFormPage> {
         return Scaffold(
 
             body: SingleChildScrollView(
-                padding: EdgeInsets.all(15),
+                padding: EdgeInsets.only(
+                    left: widget.leftPadding,
+                    top: widget.topPadding,
+                    right: widget.rightPadding,
+                    bottom: widget.bottomPadding,
+                ),
 
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,

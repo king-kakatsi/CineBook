@@ -98,7 +98,6 @@ class MyApp extends StatelessWidget {
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: context.watch<ThemeViewModel>().themeMode,
-            // home: RootPage(),
             
 
             // ooooooooooooooooooo ROUTES ooooooooooooooooooooo

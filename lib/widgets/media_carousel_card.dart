@@ -215,7 +215,6 @@ class MediaCarouselCard extends StatefulWidget {
                     ),
                 ),
 
-
                 Positioned(
                     bottom: 0,
                     left: 0,
@@ -243,13 +242,13 @@ class MediaCarouselCard extends StatefulWidget {
                                     child: Align(
                                         alignment: Alignment.centerLeft, 
 
-                                            child: Text(
+                                        child: Text(
                                             widget.title,
                                             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                                    color: Colors.white,
+                                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                                                     fontWeight: FontWeight.bold,
                                                 ),
-                                            textAlign: TextAlign.center,
+                                            textAlign: TextAlign.start,
                                         ),
                                     ),
                                 ),

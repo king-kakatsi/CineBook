@@ -1,4 +1,6 @@
 import 'package:first_project/extensions/enum_extensions.dart';
+import 'package:first_project/services/stt_service.dart';
+import 'package:first_project/widgets/display_alert.dart';
 import 'package:first_project/widgets/dynamic_form.dart';
 import 'package:first_project/widgets/lottie_animator.dart';
 import 'package:first_project/models/media.dart';
@@ -54,6 +56,11 @@ class MediaEditPageState extends State<MediaEditPage> {
     late final List<FormObject> _formObjects;
     late final Map<String, String?> _initialValues;
     final LottieAnimator _lottieAnimator = LottieAnimator();
+
+    final SttService _speechToText = SttService();
+    bool _isListening = false;
+    final GlobalKey<DynamicFormPageState> _formKey = GlobalKey<DynamicFormPageState>();
+    String _previousTextInField = '';
     // %%%%%%%%%%%%%%%%%% END - PROPERTIES %%%%%%%%%%%%%%%%
 
 
@@ -63,6 +70,7 @@ class MediaEditPageState extends State<MediaEditPage> {
     @override
     void initState() {
         super.initState();
+        _speechToText.init();
 
         _initialValues = {
             'mediaType': widget.media?.mediaType.name,
@@ -158,6 +166,74 @@ class MediaEditPageState extends State<MediaEditPage> {
         ];
     }
     // %%%%%%%%%%%%%%%%%%%% END - INIT STATE %%%%%%%%%%%%%%%%%%%
+
+
+
+
+    // %%%%%%%%%%%%%%%%%%%% CHECK IF SPEECH TO TEXT IS AVAILABLE %%%%%%%%%%%%%%
+    void _justBeforeListening (TapDownDetails _) {
+
+        if (!_speechToText.isAvailable) {
+            Alert.display(
+                context, 
+                "Unavailable Service", 
+                "Sorry, this service is unavailable on your device."
+            );
+        }
+
+        if (_formKey.currentState != null && _formKey.currentState!.currentlyFocusedController != null) {
+            _previousTextInField = _formKey.currentState!.currentlyFocusedController!.text;
+
+        } else {
+            Alert.display(
+                context, 
+                "Operation Failed", 
+                "Please click on a field before start recording."
+            );
+        }
+    }
+    // %%%%%%%%%%%%%%%%%%%% END - CHECK IF SPEECH TO TEXT IS AVAILABLE %%%%%%%%%%%%%%
+
+
+
+
+    // %%%%%%%%%%%%%%%%%%% START LISTENING %%%%%%%%%%%%%%%%%
+    Future<void> _startListening (LongPressStartDetails _) async {
+
+        if (!_speechToText.isAvailable) return;
+            
+        setState(() {
+            _isListening = true;
+        });
+        _lottieAnimator.play();
+
+        _speechToText.startListening(
+            beforeSpeech: _previousTextInField,
+
+            (text) {
+                if (_formKey.currentState != null && _formKey.currentState!.currentlyFocusedController != null) {
+                    _formKey.currentState!.currentlyFocusedController!.text = text;
+                }
+            },
+        );
+    }
+    // %%%%%%%%%%%%%%%%%%% END - START LISTENING %%%%%%%%%%%%%%%%%
+
+
+
+
+    // %%%%%%%%%%%%%%%%%%% END LISTENING AFTER LONG PRESS %%%%%%%%%%%%%%%%%
+    void _endListening (LongPressEndDetails details) {
+        setState(() {
+            _isListening = false;
+        });
+        _speechToText.stopListening();
+        _lottieAnimator.stop();
+        if (_formKey.currentState != null && _formKey.currentState!.currentlyFocusedController != null) {
+            _previousTextInField = '';
+        }
+    }
+    // %%%%%%%%%%%%%%%%%%% END - END LISTENING AFTER LONG PRESS %%%%%%%%%%%%%%%%%
 
 
 
@@ -295,7 +371,10 @@ class MediaEditPageState extends State<MediaEditPage> {
     Widget build(BuildContext context) {
 
         return GestureDetector(
-            onTap: () => FocusScope.of(context).unfocus(),
+            onTap: () { 
+                FocusScope.of(context).unfocus();
+                _formKey.currentState!.currentlyFocusedController = null;
+            },
 
             child: Scaffold(
 
@@ -315,24 +394,43 @@ class MediaEditPageState extends State<MediaEditPage> {
 
 
                 // ooooooooooooooo BODY ooooooooooooooooooo
-                body: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 50),
+                body: _lottieAnimator.builder(
+                    lottieFilePath: "assets/lottie/loading_anim.json",  
+                    backgroundColor: Theme.of(context).colorScheme.surfaceContainer, 
+                    backgroundOpacity: .3,
 
-                    child: _lottieAnimator.builder(
-                        lottieFilePath: "assets/lottie/loading_anim.json",  
-                        backgroundColor: Theme.of(context).colorScheme.onSurface, 
-                        width: 100, 
-                        height: 100,
+                    width: 100, 
+                    height: 100,
 
-                        child: DynamicFormPage(
-                            formObjects: _formObjects,
-                            onSubmit: _handleSubmit,
-                        ),
-                    ),
-                         
-                ) 
+                    alignment: _isListening ? Alignment.bottomCenter : Alignment.center,
+                    pushBottom: _isListening ? 100 : 0,
+
+                    child: DynamicFormPage(
+                        key: _formKey,
+                        formObjects: _formObjects,
+                        onSubmit: _handleSubmit,
+                        leftPadding: 15,
+                        topPadding: 30,
+                        rightPadding: 15,
+                        bottomPadding: 100,
+                    ),            
+                ), 
                 // ooooooooooooooo END - BODY ooooooooooooooooooo
-            )
+
+
+                // oooooooooooooooooo FLOATING BUTTON oooooooooooooo
+                floatingActionButton: GestureDetector(
+                    onTapDown: _justBeforeListening,
+                    onLongPressStart: _startListening,
+                    onLongPressEnd: _endListening,
+
+                    child: FloatingActionButton(
+                        onPressed: (){},
+                        child: Icon(Icons.mic_none_sharp)
+                    )
+                )
+                // oooooooooooooooooo END - FLOATING BUTTON oooooooooooooo
+            ),
         );
     }
     // %%%%%%%%%%%%%%%% END - BUILD %%%%%%%%%%%%%%%%%

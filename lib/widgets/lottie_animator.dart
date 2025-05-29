@@ -19,6 +19,7 @@ class LottieAnimator {
         required Color backgroundColor,
         required double width,
         required double height,
+        double backgroundOpacity = .5,
         double boxOpacity = 1.0,
         double pushLeft = 0.0,
         double pushTop = 0.0,
@@ -33,6 +34,7 @@ class LottieAnimator {
             key: _animaterStateKey,
             lottieFilePath: lottieFilePath,
             backgroundColor: backgroundColor,
+            backgroundOpacity: backgroundOpacity,
             boxOpacity: boxOpacity,
             alignment: alignment,
             borderRadius: borderRadius,
@@ -77,6 +79,7 @@ class _LottieAnimatorWidget extends StatefulWidget {
     final Widget child;
     final double borderRadius;
     final Color backgroundColor;
+    final double backgroundOpacity;
     final double boxOpacity;
     final Alignment alignment;
     final double width;
@@ -97,6 +100,7 @@ class _LottieAnimatorWidget extends StatefulWidget {
         required this.backgroundColor,
         required this.width,
         required this.height,
+        required this.backgroundOpacity,
         required this.boxOpacity,
         required this.alignment,
         required this.borderRadius,
@@ -156,7 +160,7 @@ class _LottieAnimatorWidgetState extends State<_LottieAnimatorWidget> {
                 // °°°°°°°°°°°°°°° ANIMATION CONATINER °°°°°°°°°°°°°°
                 if (_isPlaying)
                     Container(
-                        color: widget.backgroundColor.withValues(alpha: .5),
+                        color: widget.backgroundColor.withValues(alpha: widget.backgroundOpacity),
                         padding: EdgeInsets.only(
                             left: widget.pushLeft,
                             top: widget.pushTop,
