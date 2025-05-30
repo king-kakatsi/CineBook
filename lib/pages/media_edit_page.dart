@@ -10,7 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:uuid/uuid.dart';
 
-
+/// **Defines the possible actions for the MediaEditPage**
+/// 
+/// This enum determines whether the page is used for creating or editing
+/// series or anime content, affecting the form behavior and media type assignment.
 enum EditPageAction {
     createSeries,
     editSeries,
@@ -22,21 +25,49 @@ enum EditPageAction {
 
 
 // @@@@@@@@@@@@ STATEFUL @@@@@@@@@@@@@@@@
-
+/// **Media Edit Page Widget**
+/// 
+/// A comprehensive form page for creating and editing media entries (series/anime).
+/// Supports voice input via speech-to-text functionality and dynamic form generation.
+/// 
+/// Features:
+/// - Create new media entries or edit existing ones
+/// - Voice input with long-press microphone button
+/// - Dynamic form with various field types (text, textarea, picker, number)
+/// - Image fetching and local storage
+/// - Real-time form validation
+/// 
+/// Parameters:
+/// - title: The page title displayed in the app bar
+/// - editPageAction: Determines the action type (create/edit series/anime)
+/// - media: Optional existing media object for editing (null for creation)
 class MediaEditPage extends StatefulWidget {
 
     // %%%%%%%%%%%%%%%%%%%%%%% PROPERTIES %%%%%%%%%%%%%%%%%%%%%%%
+    /// **Page title displayed in the app bar**
     final String title;
+    
+    /// **Action type that determines form behavior and media type**
     final EditPageAction editPageAction;
+    
+    /// **Optional media object for editing (null when creating new media)**
     final Media? media;
     // %%%%%%%%%%%%%%%%%%%%%%% END - PROPERTIES %%%%%%%%%%%%%%%%%%%%%%%
 
+
+
+
+    // %%%%%%%%%%%%%%%%%% CONSTRUCTOR %%%%%%%%%%%%%%%%%%%%%
     const MediaEditPage({
         super.key,
         required this.title,
         required this.editPageAction,
         this.media,
     });
+    // %%%%%%%%%%%%%%%%%% END - CONSTRUCTOR %%%%%%%%%%%%%%%%%%%%%
+
+
+
 
     // %%%%%%%%%%%%% CREATE STATE %%%%%%%%%%%%%%%%%
     @override State<MediaEditPage> createState() => MediaEditPageState();
@@ -48,18 +79,29 @@ class MediaEditPage extends StatefulWidget {
 
 
 
-
 // @@@@@@@@@@@@@@@@@@ STATE @@@@@@@@@@@@@@@@
 class MediaEditPageState extends State<MediaEditPage> {
 
     // %%%%%%%%%%%%%%%%%% PROPERTIES %%%%%%%%%%%%%%%%
+    /// **List of form field objects that define the dynamic form structure**
     late final List<FormObject> _formObjects;
+    
+    /// **Initial values for form fields, populated from existing media data**
     late final Map<String, String?> _initialValues;
+    
+    /// **Lottie animator for loading and voice recording animations**
     final LottieAnimator _lottieAnimator = LottieAnimator();
 
+    /// **Speech-to-text service for voice input functionality**
     final SttService _speechToText = SttService();
+    
+    /// **Flag to track if the microphone is currently listening**
     bool _isListening = false;
+    
+    /// **Global key to access dynamic form state and controllers**
     final GlobalKey<DynamicFormPageState> _formKey = GlobalKey<DynamicFormPageState>();
+    
+    /// **Stores previous text in field before voice input to enable text appending**
     String _previousTextInField = '';
     // %%%%%%%%%%%%%%%%%% END - PROPERTIES %%%%%%%%%%%%%%%%
 
@@ -70,8 +112,10 @@ class MediaEditPageState extends State<MediaEditPage> {
     @override
     void initState() {
         super.initState();
+        // Initialize speech-to-text service
         _speechToText.init();
 
+        // Populate initial values from existing media data
         _initialValues = {
             'mediaType': widget.media?.mediaType.name,
             'title': widget.media?.title,
@@ -82,12 +126,13 @@ class MediaEditPageState extends State<MediaEditPage> {
             'currentEpisodeIndex': widget.media?.currentEpisodeIndex.toString(),
         };
 
+        // Handle optional enum fields with formatted names
         if (widget.media != null && widget.media!.mediaGenre != null) _initialValues['mediaGenre'] = widget.media!.mediaGenre!.formattedName;
 
         if (widget.media != null && widget.media!.watchStatus != null) _initialValues['watchStatus'] = widget.media!.watchStatus!.formattedName;
         
 
-
+        // Define dynamic form structure with all required fields
         _formObjects = [
             FormObject(
                 id: 'title',
@@ -170,7 +215,21 @@ class MediaEditPageState extends State<MediaEditPage> {
 
 
 
-    // %%%%%%%%%%%%%%%%%%%% CHECK IF SPEECH TO TEXT IS AVAILABLE %%%%%%%%%%%%%%
+    // %%%%%%%%%%%%%%%%%%%%%%%% VALIDATE SPEECH TO TEXT AVAILABILITY %%%%%%%%%%%%%%%%%% 
+    /// **Pre-listening validation and setup for speech-to-text functionality**
+    /// 
+    /// This method is called on tap down before starting voice recording.
+    /// It validates that speech-to-text service is available and that a form field is focused.
+    /// 
+    /// Parameters:
+    /// - _: TapDownDetails (unused but required by gesture detector)
+    /// 
+    /// Validation checks:
+    /// - Speech-to-text service availability
+    /// - Form field focus state
+    /// - Stores current field text for appending new voice input
+    /// 
+    /// Shows appropriate error alerts if validation fails.
     void _justBeforeListening (TapDownDetails _) {
 
         if (!_speechToText.isAvailable) {
@@ -182,6 +241,7 @@ class MediaEditPageState extends State<MediaEditPage> {
         }
 
         if (_formKey.currentState != null && _formKey.currentState!.currentlyFocusedController != null) {
+            // Store current text to append new voice input
             _previousTextInField = _formKey.currentState!.currentlyFocusedController!.text;
 
         } else {
@@ -192,12 +252,28 @@ class MediaEditPageState extends State<MediaEditPage> {
             );
         }
     }
-    // %%%%%%%%%%%%%%%%%%%% END - CHECK IF SPEECH TO TEXT IS AVAILABLE %%%%%%%%%%%%%%
+    // %%%%%%%%%%%%%%%%%%%%%%%% END - VALIDATE SPEECH TO TEXT AVAILABILITY %%%%%%%%%%%%%%%%%%
 
 
 
 
-    // %%%%%%%%%%%%%%%%%%% START LISTENING %%%%%%%%%%%%%%%%%
+    // %%%%%%%%%%%%%%%%%%%%%%%% START VOICE RECORDING %%%%%%%%%%%%%%%%%% 
+    /// **Initiates speech-to-text recording session**
+    /// 
+    /// This method starts the voice recording process when user long-presses the microphone button.
+    /// It updates the UI state, starts animations, and begins listening for speech input.
+    /// 
+    /// Parameters:
+    /// - _: LongPressStartDetails (unused but required by gesture detector)
+    /// 
+    /// Returns:
+    /// - Future<void>: Completes when recording session is initiated
+    /// 
+    /// Process:
+    /// - Validates speech-to-text availability
+    /// - Updates listening state and starts animation
+    /// - Configures speech service with current field text for appending
+    /// - Sets up real-time text update callback
     Future<void> _startListening (LongPressStartDetails _) async {
 
         if (!_speechToText.isAvailable) return;
@@ -205,11 +281,13 @@ class MediaEditPageState extends State<MediaEditPage> {
         setState(() {
             _isListening = true;
         });
+        // Start recording animation
         _lottieAnimator.play();
 
         _speechToText.startListening(
             beforeSpeech: _previousTextInField,
 
+            // Real-time text update callback
             (text) {
                 if (_formKey.currentState != null && _formKey.currentState!.currentlyFocusedController != null) {
                     _formKey.currentState!.currentlyFocusedController!.text = text;
@@ -217,12 +295,25 @@ class MediaEditPageState extends State<MediaEditPage> {
             },
         );
     }
-    // %%%%%%%%%%%%%%%%%%% END - START LISTENING %%%%%%%%%%%%%%%%%
+    // %%%%%%%%%%%%%%%%%%%%%%%% END - START VOICE RECORDING %%%%%%%%%%%%%%%%%%
 
 
 
 
-    // %%%%%%%%%%%%%%%%%%% END LISTENING AFTER LONG PRESS %%%%%%%%%%%%%%%%%
+    // %%%%%%%%%%%%%%%%%%%%%%%% STOP VOICE RECORDING %%%%%%%%%%%%%%%%%% 
+    /// **Stops speech-to-text recording session**
+    /// 
+    /// This method ends the voice recording when user releases the long-press.
+    /// It cleans up the recording state and stops all related animations.
+    /// 
+    /// Parameters:
+    /// - details: LongPressEndDetails containing gesture information
+    /// 
+    /// Process:
+    /// - Updates listening state to false
+    /// - Stops speech-to-text service
+    /// - Stops Lottie animation
+    /// - Clears previous text storage
     void _endListening (LongPressEndDetails details) {
         setState(() {
             _isListening = false;
@@ -233,18 +324,42 @@ class MediaEditPageState extends State<MediaEditPage> {
             _previousTextInField = '';
         }
     }
-    // %%%%%%%%%%%%%%%%%%% END - END LISTENING AFTER LONG PRESS %%%%%%%%%%%%%%%%%
+    // %%%%%%%%%%%%%%%%%%%%%%%% END - STOP VOICE RECORDING %%%%%%%%%%%%%%%%%%
 
 
 
 
-    // %%%%%%%%%%%%%%%%%%%%%% HANDLE SUBMIT %%%%%%%%%%%%%%%%%%%%
+    // %%%%%%%%%%%%%%%%%%%%%%%% HANDLE FORM SUBMISSION %%%%%%%%%%%%%%%%%% 
+    /// **Processes form submission for media creation or editing**
+    /// 
+    /// This method handles the complete flow of creating new media or updating existing media.
+    /// It validates form data, fetches images, and saves to local storage via MediaController.
+    /// 
+    /// Parameters:
+    /// - results: Map<String, String?> containing all form field values
+    /// 
+    /// Returns:
+    /// - Future<void>: Completes when submission process is finished
+    /// 
+    /// Process:
+    /// - Determines media type based on edit action
+    /// - Creates new Media object or updates existing one
+    /// - Fetches and stores images from URLs
+    /// - Saves to Hive database via MediaController
+    /// - Shows success/error feedback and navigates back
+    /// 
+    /// Example usage:
+    /// ```dart
+    /// Map<String, String?> formData = {'title': 'New Series', 'description': '...'};
+    /// await _handleSubmit(formData);
+    /// ```
     void _handleSubmit (Map<String, String?> results) async {
 
         // Play await Anim
         _lottieAnimator.play();
 
         // °°°°°°°°°°°°°°° INIT MEDIA TYPE °°°°°°°°°°°°°°°
+        // Determine media type based on current action
         Mediatype mediaType;
         switch (widget.editPageAction) {
             case EditPageAction.createSeries:
@@ -274,7 +389,7 @@ class MediaEditPageState extends State<MediaEditPage> {
                 newMedia.currentSeasonIndex = int.tryParse(results['currentSeasonIndex'] ?? "");
                 newMedia.currentEpisodeIndex = int.tryParse(results['currentEpisodeIndex'] ?? '');
 
-
+                // Convert formatted enum names back to enum values
                 newMedia.mediaGenre = enumFromFormatted<MediaGenre>(MediaGenre.values, results['mediaGenre'] ?? '');
                 newMedia.watchStatus = enumFromFormatted<WatchStatus>(WatchStatus.values, results['watchStatus'] ?? '');
 
@@ -285,11 +400,13 @@ class MediaEditPageState extends State<MediaEditPage> {
                 newMedia.imageUrl = results['imageUrl'] ?? '';
                 newMedia.imagePath = '';
                 if (newMedia.imageUrl != '' && newMedia.imageUrl.isNotEmpty){
+                    // Download image from URL and store locally
                     final tempPath = await MediaGetter.fetchImageFromUrl(newMedia.imageUrl);
                     newMedia.imagePath = tempPath ?? '';
                 }
                 // ============ END - FETCH THE IMAGE ================
 
+                // Set timestamps and generate search data
                 newMedia.creationDate = DateTime.now();
                 newMedia.lastModificationDate = DateTime.now();
                 newMedia.generateSearchFinder();
@@ -300,8 +417,11 @@ class MediaEditPageState extends State<MediaEditPage> {
 
             } else {
                 // °°°°°°°°°°°°°° MODIFY EXISTING MEDIA °°°°°°°°°°°°°°°°°°
+                // Store previous image info for cleanup
                 final prevUrl = widget.media!.imageUrl;
                 final prevPath = widget.media!.imagePath;
+                
+                // Update all fields with form data
                 widget.media!
                     ..title = results['title'] ?? widget.media!.title
                     ..description = results['description'] ?? widget.media!.description
@@ -320,12 +440,14 @@ class MediaEditPageState extends State<MediaEditPage> {
 
                 // ============ FETCH THE IMAGE ================
                 widget.media!.imageUrl = results['imageUrl'] ?? '';
+                // Only fetch new image if URL changed
                 if (prevUrl != widget.media!.imageUrl){
 
                     if (widget.media!.imageUrl != '' && widget.media!.imageUrl.isNotEmpty) {
                         final tempPath = await MediaGetter.fetchImageFromUrl(widget.media!.imageUrl);
                         widget.media!.imagePath = tempPath ?? '';
                     }
+                    // Clean up old image file
                     MediaGetter.deleteFromLocalDir(prevPath);
                 }
                 // ============ END - FETCH THE IMAGE ================
@@ -344,6 +466,7 @@ class MediaEditPageState extends State<MediaEditPage> {
         _lottieAnimator.stop();
 
         if (done) {
+            // Show success message and navigate back
             ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                     content: Text("Successfully done"),
@@ -353,7 +476,7 @@ class MediaEditPageState extends State<MediaEditPage> {
             Navigator.of(context).pop();
 
         } else {
-            // final context = navigatorKey.currentContext;
+            // Show error message
             ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                     content: Text("Something went wrong. Try again later"),
@@ -361,7 +484,7 @@ class MediaEditPageState extends State<MediaEditPage> {
             );
         }
     }
-    // %%%%%%%%%%%%%%%%%%%%%% END - HANDLE SUBMIT %%%%%%%%%%%%%%%%%%%%
+    // %%%%%%%%%%%%%%%%%%%%%%%% END - HANDLE FORM SUBMISSION %%%%%%%%%%%%%%%%%%
 
 
 
@@ -371,6 +494,7 @@ class MediaEditPageState extends State<MediaEditPage> {
     Widget build(BuildContext context) {
 
         return GestureDetector(
+            // Dismiss keyboard and clear focus when tapping outside form fields
             onTap: () { 
                 FocusScope.of(context).unfocus();
                 _formKey.currentState!.currentlyFocusedController = null;
@@ -402,6 +526,7 @@ class MediaEditPageState extends State<MediaEditPage> {
                     width: 100, 
                     height: 100,
 
+                    // Position animation based on listening state
                     alignment: _isListening ? Alignment.bottomCenter : Alignment.center,
                     pushBottom: _isListening ? 100 : 0,
 
@@ -420,12 +545,13 @@ class MediaEditPageState extends State<MediaEditPage> {
 
                 // oooooooooooooooooo FLOATING BUTTON oooooooooooooo
                 floatingActionButton: GestureDetector(
+                    // Handle voice input gestures
                     onTapDown: _justBeforeListening,
                     onLongPressStart: _startListening,
                     onLongPressEnd: _endListening,
 
                     child: FloatingActionButton(
-                        onPressed: (){},
+                        onPressed: (){}, // Empty onPressed required for FloatingActionButton
                         child: Icon(Icons.mic_none_sharp)
                     )
                 )

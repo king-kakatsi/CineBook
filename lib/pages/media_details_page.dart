@@ -11,10 +11,19 @@ import 'package:provider/provider.dart';
 
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@ STATEFUL WIDGET @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
+/// **Media Details Page Widget**
+/// 
+/// A stateful widget that displays detailed information about a media item with
+/// a draggable bottom sheet interface. Features include media image background,
+/// interactive controls for editing/deleting, and text-to-speech functionality
+/// for the synopsis.
+/// 
+/// The widget uses a custom draggable animation system where users can drag
+/// the information panel up and down, with automatic snapping to open/closed positions.
 class MediaDetailsPage extends StatefulWidget {
 
     // %%%%%%%%%%%%%%%%%%%% PROPERTIES %%%%%%%%%%%%%%%%%%%%%%%
+    /// The media object containing all information to display
     final Media media;
     // %%%%%%%%%%%%%%%%%%%% END - PROPERTIES %%%%%%%%%%%%%%%%%%%%%%%
 
@@ -22,6 +31,11 @@ class MediaDetailsPage extends StatefulWidget {
 
 
     // %%%%%%%%%%%%%%%%%%% CONSTRUCTOR %%%%%%%%%%%%%%%%%%%%%
+    /// **Constructor for MediaDetailsPage**
+    /// 
+    /// Parameters:
+    /// - key: Widget key for Flutter's widget tree
+    /// - media: Required Media object containing the details to display
     const MediaDetailsPage ({
         super.key,
         required this.media
@@ -43,20 +57,32 @@ class MediaDetailsPage extends StatefulWidget {
 
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ STATE OF STATEFUL WIDGET @@@@@@@@@@@@@@@@@@@@@@@@@
+/// **State class for MediaDetailsPage**
+/// 
+/// Manages the complex draggable bottom sheet animation system and text-to-speech
+/// functionality. Uses SingleTickerProviderStateMixin for animation control.
 class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerProviderStateMixin {
 
     // %%%%%%%%%%%%%%%%%%%%% PROPERTIES %%%%%%%%%%%%%%%%%%%%
+    /// Animation controller for managing the draggable sheet animations
     late final AnimationController _animationController;
+    /// Animation for the vertical translation of the bottom sheet
     late Animation<double> _bottomSheetTransalteYAnim;
+    /// Animation for the opacity changes of the bottom sheet content
     late Animation<double> _bottomSheetOpacityAnim;
+    /// Tween for position interpolation during animations
     late Tween<double> _positionTween;
+    /// Tween for opacity interpolation during animations
     late Tween<double> _opacityTween;
 
-
+    /// Factor determining the closed position relative to screen height (0.9 = 90% down)
     late double _closeSheetPositionFactor;
+    /// Factor determining the open position relative to screen height (0.2 = 20% down)
     late double _openSheetPositionFactor;
     
+    /// Absolute Y position when sheet is fully open
     late  final double _openBottomSheetPosY;
+    /// Absolute Y position when sheet is fully closed
     late final double _closeBottomSheetPosY;
 
     /// Constant value that keeps the initial position of the draggable conatainer
@@ -68,15 +94,22 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
 
     /// Constant value that keeps the bottom limit the draggable container can't pass
     late final double _bottomLimitPos; 
+    /// Current Y position of the draggable sheet during runtime
     late double _currentBottomSheetPosY;
+    /// Current opacity value of the sheet content during runtime
     late double _currentBottomSheetOpacity;
 
+    /// Flag indicating if the user is currently dragging the sheet
     bool _isDragging = false;
     
+    /// Text-to-speech service instance for reading the synopsis
     late final TtsService _tts;
+    /// Flag indicating if TTS is currently reading the synopsis
     bool _isReadingSynopsis = false;
 
+    /// Duration of animations in milliseconds
     late final int _animationDuration;
+    /// Global key for accessing the bottom sheet's render box
     final GlobalKey bottomSheetKey = GlobalKey();
     // %%%%%%%%%%%%%%%%%%%%% END - PROPERTIES %%%%%%%%%%%%%%%%%%%%
 
@@ -96,6 +129,14 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
 
 
     // %%%%%%%%%%%%%%%%%%% INIT ANIMATIONS %%%%%%%%%%%%%%%%%%%
+    /// **Initializes the draggable animation system**
+    /// 
+    /// Sets up all animation controllers, position calculations, and constraints
+    /// for the draggable bottom sheet. Uses post-frame callback to get accurate
+    /// positioning after widget layout is complete.
+    /// 
+    /// Parameters:
+    /// - context: BuildContext for accessing screen dimensions and theme
     void initAnimations (BuildContext context) {
 
         _animationDuration = 600;
@@ -106,6 +147,7 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
         _initBottomSheetPosY = 0;
         _currentBottomSheetOpacity = 1;
 
+        // Wait for widget to be laid out before calculating positions
         WidgetsBinding.instance.addPostFrameCallback((_) {
 
             final RenderBox box = bottomSheetKey.currentContext!.findRenderObject() as RenderBox;
@@ -144,8 +186,16 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
 
     
     // %%%%%%%%%%%%%%%%%% DRAG BOTTOM SHEET %%%%%%%%%%%%%%%%%
+    /// **Handles dragging of the bottom sheet**
+    /// 
+    /// Updates the position and opacity of the bottom sheet in real-time as the user drags.
+    /// Constrains movement within defined limits and calculates opacity based on position.
+    /// 
+    /// Parameters:
+    /// - details: DragUpdateDetails containing delta movement information
     void dragBottomSheet (DragUpdateDetails details) {
 
+        // Stop any running animation and capture current position
         if (!_isDragging) {
             _animationController.stop();
             _currentBottomSheetPosY = _bottomSheetTransalteYAnim.value;
@@ -153,6 +203,7 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
 
         var tempPosY = _currentBottomSheetPosY + details.delta.dy;
 
+        // Calculate opacity based on position within motion area
         double newOpacity = _currentBottomSheetOpacity - (details.delta.dy / _bottomSheetMotionAreaHeight);
 
         setState(() {
@@ -167,6 +218,13 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
 
 
     // %%%%%%%%%%%%%%%%%% END DRAGGING BOTTOM SHEET %%%%%%%%%%%%%%
+    /// **Handles the end of bottom sheet dragging**
+    /// 
+    /// Called when user releases their finger after dragging. Resets the dragging flag
+    /// and triggers the snap animation to the nearest position (open/closed).
+    /// 
+    /// Parameters:
+    /// - details: DragEndDetails containing velocity and other end-drag information
     void endDraggingBottomSheet (DragEndDetails details) {
         setState(() {
           _isDragging = false;
@@ -179,15 +237,24 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
 
 
     // %%%%%%%%%%%%%%%%%% ANIMATE DRAGGABLE BOTTOM SHEET %%%%%%%%%%%%%%%%
+    /// **Animates the bottom sheet to its target position**
+    /// 
+    /// Determines whether to snap to open or closed position based on current location
+    /// relative to the middle point. Creates smooth animations for both position and opacity.
+    /// 
+    /// Parameters:
+    /// - wasDragged: Boolean indicating if this animation was triggered by drag end (default: true)
     void animateDraggableSheet({bool wasDragged = true}) {
 
+        // Calculate middle point to determine snap direction
         double middleY = _openBottomSheetPosY + ((_closeBottomSheetPosY - _openBottomSheetPosY) / 2);  
         middleY = (middleY - _initBottomSheetPosY).clamp(_topLimitPos, _bottomLimitPos);
 
+        // Determine target position and opacity based on current position relative to middle
         double targetPosY = middleY >= _currentBottomSheetPosY ? _openBottomSheetPosY : _closeBottomSheetPosY;
-
         double targetOpacity = middleY >= _currentBottomSheetPosY ? 1.0 : 0.0;
 
+        // Setup position animation
         _positionTween = Tween<double>(
             begin: _currentBottomSheetPosY,
             end: (targetPosY - _initBottomSheetPosY).clamp(_topLimitPos, _bottomLimitPos),
@@ -200,7 +267,7 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
             ),
         );
 
-         
+        // Setup opacity animation
         _opacityTween = Tween<double>(
             begin: _currentBottomSheetOpacity,
             end: targetOpacity,
@@ -223,6 +290,10 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
 
 
     // %%%%%%%%%%%%%%%%%%% INIT TTS %%%%%%%%%%%%%%%%%
+    /// **Initializes the Text-to-Speech service**
+    /// 
+    /// Sets up TTS with callback handlers for start, completion, and cancellation events.
+    /// Updates the UI state accordingly when TTS status changes.
     void initTts () {
         _tts = TtsService(
             onStart: () => setState(() {_isReadingSynopsis = true;}),
@@ -236,6 +307,10 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
 
 
     // %%%%%%%%%%%%%%%%%%% READ OR STOP SYNOPSIS %%%%%%%%%%%%%%%%%
+    /// **Toggles Text-to-Speech for the media synopsis**
+    /// 
+    /// If TTS is currently reading, stops it. If not reading, starts reading
+    /// the media description using the TTS service.
     void readOrStopSynopsis () async {
 
         if (_isReadingSynopsis) {
@@ -272,7 +347,7 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
             // °°°°°°°°°°°°°°°°° IMAGE AS BACKGROUND FOR THE CONTAINER °°°°°°°°°°°
             decoration: BoxDecoration(
                 image: DecorationImage(
-
+                    // Use local image if available, otherwise use network image
                     image: widget.media.imagePath.isEmpty? 
                         NetworkImage(widget.media.imageUrl) as ImageProvider : 
                         FileImage(File(widget.media.imagePath)),
@@ -317,12 +392,10 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
 
                     Expanded(child: SizedBox()),
 
-
-
                     // °°°°°°°°°°°°°°° INFORATIONS °°°°°°°°°°°°°°°°°°
-
                     Transform(
                         key: bottomSheetKey,
+                        // Apply translation transform based on current drag state or animation
                         transform: Matrix4.identity()
                             ..translate(
                                 0.0, 
@@ -335,12 +408,12 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
 
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
 
+                                children: [
                                     Row(
                                         mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
 
+                                        children: [
                                             // ============== TITLE ===============
                                             Container(
                                                 width: MediaQuery.of(context).size.width * .5,
@@ -352,7 +425,6 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
                                                 ),
 
                                                 decoration: BoxDecoration(
-                                                    
                                                     borderRadius: BorderRadius.only(
                                                         topRight: Radius.circular(40),
                                                         bottomRight: Radius.circular(40),
@@ -384,7 +456,6 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
                                                     ),
                                                 ),
                                             ),
-                                            
                                             // ============== END - TITLE ===============
 
                                             SizedBox(width: 10,),
@@ -444,6 +515,7 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
                                                             onPressed: () => readOrStopSynopsis(),
 
                                                             icon: Icon(
+                                                                // Show stop icon when reading, play icon when not
                                                                 _isReadingSynopsis ? 
                                                                     Icons.stop_rounded : 
                                                                     Icons.play_arrow_rounded, 
@@ -494,6 +566,7 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
 
                                     // =============== DESCRIPTION _ RATE _ CURRENT SEASON AND EPISODE ===============
                                     AnimatedOpacity(
+                                        // Use current opacity during drag, animation value otherwise
                                         opacity: _isDragging? 
                                         _currentBottomSheetOpacity : 
                                         _bottomSheetOpacityAnim.value, 
@@ -516,7 +589,7 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
                                                     topRight: Radius.circular(80),
                                                 ),
 
-                                                // color: Theme.of(context).colorScheme.primary,
+                                                // Use gradient from primary to surface container
                                                 gradient: LinearGradient(
                                                     begin: Alignment.topCenter,
                                                     end: Alignment.bottomCenter,
