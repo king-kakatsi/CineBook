@@ -430,25 +430,59 @@ class MediaListWidgetState extends State<MediaListWidget> with TickerProviderSta
                             // :::::-:::::-:-- SEARCH BAR :::::-:::::-:--
                             TextField(
                                 onChanged: (value) => mediaController.search(value),
+                                style: TextStyle(
+                                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                                    fontSize: 14,
+                                ),
+                                cursorColor: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.5),
 
                                 decoration: InputDecoration(
-
                                     hintText: "Search here...",
-                                    prefixIcon: Icon(Icons.search),
+
+                                    labelStyle: TextStyle(
+                                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha:1.0),
+                                        fontSize: 12,
+                                    ),
+
+                                    hintStyle: TextStyle(
+                                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.6),
+                                        fontSize: 12,
+                                    ),
+
+                                    prefixIcon: Icon(
+                                        Icons.search,
+                                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                                        size: 20,
+                                    ),
+
                                     filled: true,
-                                    fillColor: Theme.of(context).colorScheme.surfaceContainer,
+                                    fillColor: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha:0.6),
                                     contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
 
                                     border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(70),
                                         borderSide: BorderSide(
-                                            color: Theme.of(context).colorScheme.onSurface,
-                                            width: .02,
+                                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
+                                            width: 0.5,
                                         ),
-                                    )
+                                    ),
 
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(70),
+                                        borderSide: BorderSide(
+                                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                                            width: 0.5,
+                                        ),
+                                    ),
+
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(70),
+                                        borderSide: BorderSide(
+                                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 1.0),
+                                            width: 0.5,
+                                        ),
+                                    ),
                                 ),
-                                
                             ),
                             // :::::-:::::-:-- END - SEARCH BAR :::::-:::::-:--
 
