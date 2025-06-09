@@ -595,9 +595,10 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
                                                     end: Alignment.bottomCenter,
                                                     colors: [
                                                         Theme.of(context).colorScheme.primary,
-                                                        Theme.of(context).colorScheme.surfaceContainer
+                                                        Theme.of(context).colorScheme.surfaceContainer,
+                                                        Theme.of(context).colorScheme.surfaceContainer,
                                                     ],
-                                                    stops: [0.0, 1.0],
+                                                    stops: [0.0, 0.4, 1.0],
                                                 ),
                                             ),
 
@@ -616,7 +617,7 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
                                                             Text(
                                                                 "Genre: ${widget.media.mediaGenre?.formattedName}",
                                                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                                    color: Theme.of(context).colorScheme.onSurface,
+                                                                    color: Theme.of(context).colorScheme.onPrimary,
                                                                     fontWeight: FontWeight.w600,
                                                                 ), 
                                                             ),
@@ -627,7 +628,7 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
                                                             Text(
                                                                 "Status: ${widget.media.watchStatus?.formattedName}",
                                                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                                    color: Theme.of(context).colorScheme.onSurface,
+                                                                    color: Theme.of(context).colorScheme.onPrimary,
                                                                     fontWeight: FontWeight.w600,
                                                                 ), 
                                                             ),
@@ -639,7 +640,7 @@ class MediaDetailsPageState extends State<MediaDetailsPage> with SingleTickerPro
                                                         Text(
                                                             "Your rating: ${widget.media.rate ?? 'N/A'}",
                                                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                                color: Theme.of(context).colorScheme.onSurface
+                                                                color: Theme.of(context).colorScheme.onPrimary
                                                             ), 
                                                         ),
                                                         // --------------- END - RATE ---------------

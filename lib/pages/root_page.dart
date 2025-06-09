@@ -1,7 +1,7 @@
 import 'package:first_project/controllers/media_controller.dart';
 import 'package:first_project/extensions/enum_extensions.dart';
 import 'package:first_project/services/tts_service.dart';
-import 'package:first_project/themes/theme_viewmodel.dart';
+import 'package:first_project/controllers/theme_controller.dart';
 import 'package:first_project/widgets/lottie_animator.dart';
 import 'package:first_project/widgets/menu.dart';
 import 'package:first_project/pages/home_page.dart';
@@ -55,7 +55,7 @@ class RootPage extends StatefulWidget {
 ///
 /// This state class handles:
 /// - Menu toggle animations with translation and border radius effects
-/// - Theme switching through ThemeViewModel
+/// - Theme switching through ThemeController
 /// - Backup import/export operations
 /// - TTS language selection dialog
 /// - Animation controller lifecycle management
@@ -78,9 +78,9 @@ class RootPageState extends State<RootPage> with SingleTickerProviderStateMixin 
     
     /// **Theme management service**
     /// 
-    /// Injected ThemeViewModel instance for handling theme switching.
+    /// Injected ThemeController instance for handling theme switching.
     /// Retrieved from GetIt dependency injection container.
-    late final ThemeViewModel _themeViewModel;
+    late final ThemeController _themeController;
     
     /// **Animation controller for menu slide transitions**
     /// 
@@ -126,7 +126,7 @@ class RootPageState extends State<RootPage> with SingleTickerProviderStateMixin 
     /// **Initializes state and sets up animations and menu options**
     /// 
     /// This method:
-    /// - Retrieves ThemeViewModel from dependency injection
+    /// - Retrieves ThemeController from dependency injection
     /// - Configures animation parameters and controllers
     /// - Sets up translation animation with easing curves
     /// - Populates menu options with their respective actions
@@ -141,7 +141,7 @@ class RootPageState extends State<RootPage> with SingleTickerProviderStateMixin 
         super.initState();
 
         // Initialize theme service and animation parameters
-        _themeViewModel = GetIt.instance<ThemeViewModel>();
+        _themeController = GetIt.instance<ThemeController>();
         _translationYValue = 400.0;
         _animationDuration = 600;
 
@@ -168,8 +168,8 @@ class RootPageState extends State<RootPage> with SingleTickerProviderStateMixin 
                 icon: Icons.brightness_6,
                 title: "Change Theme",
 
-                action: () {
-                    _themeViewModel.toggleTheme();
+                action: () async {
+                    await _themeController.toggleTheme();
                     toggleMenu();
                 },
             ),

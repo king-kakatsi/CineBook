@@ -274,22 +274,22 @@ class MediaListWidgetState extends State<MediaListWidget> with TickerProviderSta
 
     // %%%%%%%%%%%%%%%%%%%%% GET APPROPRIATE IMAGE WIDGET %%%%%%%%%%%%%%%%%%%
     /// 𝐑𝐞𝐭𝐮𝐫𝐧𝐬 𝐭𝐡𝐞 𝐚𝐩𝐩𝐫𝐨𝐩𝐫𝐢𝐚𝐭𝐞 𝐰𝐢𝐝𝐠𝐞𝐭 𝐟𝐨𝐫 𝐫𝐞𝐧𝐝𝐞𝐫𝐢𝐧𝐠 𝐚 𝐌𝐞𝐝𝐢𝐚 𝐢𝐦𝐚𝐠𝐞.
-///
-/// Checks whether the image file exists at the specified `Media.imagePath`.
-/// If the file exists, it displays it using an `Image.file`.  
-/// Otherwise, a fallback icon is shown.
-///
-/// Parameters:
-/// - `media` : The `Media` object containing the image path to check.
-///
-/// Returns:
-/// - `Widget` : Either an `Image.file` widget (when path is valid),
-///              or a fallback `Icon` when the file does not exist.
-///
-/// Usage example:
-/// ```dart
-/// Widget cover = getAppropriateImageWidget(media);
-/// ```
+    ///
+    /// Checks whether the image file exists at the specified `Media.imagePath`.
+    /// If the file exists, it displays it using an `Image.file`.  
+    /// Otherwise, a fallback icon is shown.
+    ///
+    /// Parameters:
+    /// - `media` : The `Media` object containing the image path to check.
+    ///
+    /// Returns:
+    /// - `Widget` : Either an `Image.file` widget (when path is valid),
+    ///              or a fallback `Icon` when the file does not exist.
+    ///
+    /// Usage example:
+    /// ```dart
+    /// Widget cover = getAppropriateImageWidget(media);
+    /// ```
     Widget getAppropriateImageWidget (Media media) {
         final file = File(media.imagePath);
 
@@ -419,355 +419,380 @@ class MediaListWidgetState extends State<MediaListWidget> with TickerProviderSta
             child: Scaffold(
 
                 // oooooooooooooooooooo BODY oooooooooooooooooo
-                body: Padding(
-                    
-                    padding: EdgeInsets.fromLTRB(15, 20, 15, 0), 
+                body: Container(
+                    color: Theme.of(context).colorScheme.primary.withValues(alpha: .2),
 
-                    child: Column(
-                        spacing: 20,
-                        children: [
-
-                            // :::::-:::::-:-- SEARCH BAR :::::-:::::-:--
-                            TextField(
-                                onChanged: (value) => mediaController.search(value),
-                                style: TextStyle(
-                                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                                    fontSize: 14,
-                                ),
-                                cursorColor: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.5),
-
-                                decoration: InputDecoration(
-                                    hintText: "Search here...",
-
-                                    labelStyle: TextStyle(
-                                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha:1.0),
-                                        fontSize: 12,
-                                    ),
-
-                                    hintStyle: TextStyle(
-                                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.6),
-                                        fontSize: 12,
-                                    ),
-
-                                    prefixIcon: Icon(
-                                        Icons.search,
-                                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                                        size: 20,
-                                    ),
-
-                                    filled: true,
-                                    fillColor: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha:0.6),
-                                    contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-
-                                    border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(70),
-                                        borderSide: BorderSide(
-                                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
-                                            width: 0.5,
+                    child: Padding(
+                      
+                        padding: EdgeInsets.only(top: 20,), 
+                  
+                        child: Column(
+                            spacing: 20,
+                            children: [
+                  
+                                // :::::-:::::-:-- SEARCH BAR :::::-:::::-:--
+                                Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
+                                    child: TextField(
+                                        onChanged: (value) => mediaController.search(value),
+                                        style: TextStyle(
+                                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                                            fontSize: 14,
                                         ),
-                                    ),
-
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(70),
-                                        borderSide: BorderSide(
+                                        cursorColor: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.5),
+                                                        
+                                        decoration: InputDecoration(
+                                        hintText: "Search here...",
+                                                    
+                                        labelStyle: TextStyle(
+                                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha:1.0),
+                                            fontSize: 12,
+                                        ),
+                                                    
+                                        hintStyle: TextStyle(
+                                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.6),
+                                            fontSize: 12,
+                                        ),
+                                                    
+                                        prefixIcon: Icon(
+                                            Icons.search,
                                             color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                                            width: 0.5,
+                                            size: 20,
+                                        ),
+                                                    
+                                        filled: true,
+                                        fillColor: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha:0.1),
+                                        contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                                                    
+                                        border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(70),
+                                            borderSide: BorderSide(
+                                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
+                                                width: 0.5,
+                                            ),
+                                        ),
+                                                    
+                                        enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(70),
+                                            borderSide: BorderSide(
+                                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                                                width: 0.5,
+                                            ),
+                                        ),
+                                                    
+                                        focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(70),
+                                            borderSide: BorderSide(
+                                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 1.0),
+                                                width: 0.5,
+                                            ),
                                         ),
                                     ),
-
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(70),
-                                        borderSide: BorderSide(
-                                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 1.0),
-                                            width: 0.5,
-                                        ),
                                     ),
                                 ),
-                            ),
-                            // :::::-:::::-:-- END - SEARCH BAR :::::-:::::-:--
-
-
-                            // ::--::::::-::-::--::: LIST ACTION BUTTONS ::--::::::-::-::--:::
-                            Row(
-                                spacing: 5,
-                                children: [
-                                    Text(
-                                        "Sort by",
-                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                            color: Theme.of(context).colorScheme.onSurface,
-                                            fontWeight: FontWeight.w600
-                                        ),
-                                    ),
-
-                                    SizedBox(width: 5),
-
-                                    // °°°°°°°°°°°°°° SORT BUTTONS °°°°°°°°°°°°°°°°°
-                                    Flexible(
-                                        fit: FlexFit.loose, 
-                                        child: ToggleButtonGroup(
-                                            buttons: mediaController.sortButtons,
-                                            onChanged: (selectedIndex, buttons) => mediaController.sortBy(selectedIndex, buttons),
-                                        ),
-                                    ),
-                                    // °°°°°°°°°°°°°° END - SORT BUTTONS °°°°°°°°°°°°°°°°°
-
-                                    // SizedBox(width: 5),
-                                    Container(
-                                        width: 2,
-                                        height: 30,
-                                        color: Theme.of(context).colorScheme.surfaceContainerHigh,
-                                    ),
-
-                                    // °°°°°°°°°°°°°°°° REVERSE BUTTON °°°°°°°°°°°°°°°°°°°
-                                    Transform.rotate(
-                                        angle: _inverseListRotationAnim.value * pi / 180,
-
-                                        child: IconButton(
-                                            onPressed: animateButonAndReverseTheList, 
-                                            iconSize: 30,
-
-                                            icon: Icon(
-                                                Icons.swap_vertical_circle, 
-                                                color: Theme.of(context).colorScheme.surfaceContainerHigh,          
+                                // :::::-:::::-:-- END - SEARCH BAR :::::-:::::-:--
+                  
+                  
+                                // ::--::::::-::-::--::: LIST ACTION BUTTONS ::--::::::-::-::--:::
+                                Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
+                                    child: Row(
+                                        spacing: 5,
+                                        children: [
+                                        Text(
+                                            "Sort by",
+                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                color: Theme.of(context).colorScheme.onSurface,
+                                                fontWeight: FontWeight.w600
                                             ),
                                         ),
-                                    ),
-                                    // °°°°°°°°°°°°°°°° END - REVERSE BUTTON °°°°°°°°°°°°°°°°°°°
-
-                                    // SizedBox(width: 5),
-
-                                    // °°°°°°°°°°°°°°°° REFRESH BUTTON °°°°°°°°°°°°°°°°°°°
-                                    Transform(
-                                        alignment: Alignment.center,
-                                        transform: Matrix4.identity()
-                                            ..scale(-1.0, 1.0)
-                                            ..rotateZ(-_refreshListRotationAnim.value * pi / 180),
-
-                                        child: IconButton(
-                                            onPressed: animateButtonAndRefreshTheList, 
-                                            iconSize: 30,
-                                            icon: Icon(
-                                                Icons.replay_circle_filled_rounded,
-                                                color: Theme.of(context).colorScheme.surfaceContainerHigh, 
+                                                    
+                                        SizedBox(width: 5),
+                                                    
+                                        // °°°°°°°°°°°°°° SORT BUTTONS °°°°°°°°°°°°°°°°°
+                                        Flexible(
+                                            fit: FlexFit.loose, 
+                                            child: ToggleButtonGroup(
+                                                initialIndex: mediaController.currentSortIndex,
+                                                buttons: mediaController.sortButtons,
+                                                onChanged: (selectedIndex, buttons) async => await mediaController.sortBy(selectedIndex, buttons),
                                             ),
                                         ),
+                                        // °°°°°°°°°°°°°° END - SORT BUTTONS °°°°°°°°°°°°°°°°°
+                                                    
+                                        // SizedBox(width: 5),
+                                        Container(
+                                            width: 2,
+                                            height: 30,
+                                            color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                                        ),
+                                                    
+                                        // °°°°°°°°°°°°°°°° REVERSE BUTTON °°°°°°°°°°°°°°°°°°°
+                                        Transform.rotate(
+                                            angle: _inverseListRotationAnim.value * pi / 180,
+                                                    
+                                            child: IconButton(
+                                                onPressed: animateButonAndReverseTheList, 
+                                                iconSize: 30,
+                                                    
+                                                icon: Icon(
+                                                    Icons.swap_vertical_circle, 
+                                                    color: Theme.of(context).colorScheme.surfaceContainerHigh,          
+                                                ),
+                                            ),
+                                        ),
+                                        // °°°°°°°°°°°°°°°° END - REVERSE BUTTON °°°°°°°°°°°°°°°°°°°
+                                                    
+                                        // SizedBox(width: 5),
+                                                    
+                                        // °°°°°°°°°°°°°°°° REFRESH BUTTON °°°°°°°°°°°°°°°°°°°
+                                        Transform(
+                                            alignment: Alignment.center,
+                                            transform: Matrix4.identity()
+                                                ..scale(-1.0, 1.0)
+                                                ..rotateZ(-_refreshListRotationAnim.value * pi / 180),
+                                                    
+                                            child: IconButton(
+                                                onPressed: animateButtonAndRefreshTheList, 
+                                                iconSize: 30,
+                                                icon: Icon(
+                                                    Icons.replay_circle_filled_rounded,
+                                                    color: Theme.of(context).colorScheme.surfaceContainerHigh, 
+                                                ),
+                                            ),
+                                        ),
+                                        // °°°°°°°°°°°°°°°° END - REFRESH BUTTON °°°°°°°°°°°°°°°°°°° 
+                                    ],
                                     ),
-                                    // °°°°°°°°°°°°°°°° END - REFRESH BUTTON °°°°°°°°°°°°°°°°°°° 
-                                ],
-                            ),
-                            // ::--::::::-::-::--::: END - LIST ACTION BUTTONS ::--::::::-::-::--:::
-
-
-                            // ::--::::::-::-::--::: LIST VIEW ::--::::::-::-::--:::
-                            Expanded(
-
-                                child: _lottieAnimator.builder(
-                                    lottieFilePath: "assets/lottie/loading_anim.json",  
-                                    backgroundColor: Theme.of(context).colorScheme.surfaceContainer, 
-                                    backgroundOpacity: .5,
-                                    width: 100, 
-                                    height: 100,
-
-                                    child: ListView.builder(
-                                        itemCount: mediaController.mediaList.length,
+                                ),
+                                // ::--::::::-::-::--::: END - LIST ACTION BUTTONS ::--::::::-::-::--:::
+                  
+                  
+                              // ::--::::::-::-::--::: LIST VIEW ::--::::::-::-::--:::
+                                Expanded(
                                     
-                                        itemBuilder: (context, index) {
-                                          final media = mediaController.mediaList[index];
-                                  
-                                            return Stack(
-                                                children: [
-                                                    InkWell(
-                                                                                
-                                                        // °°°°°°°°°°°°° ON MEDIA SELECTED °°°°°°°°°°°°°°°°°
-                                                        onTap: () => Navigator.of(context).pushNamed(
-                                                            "/mediaDetails",
-                                                            arguments: {'media': media,},
-                                                        ),
-                                                        // °°°°°°°°°°°°° END - ON MEDIA SELECTED °°°°°°°°°°°°°°°°°
-                                                        
-                                                        child: Padding(
-                                                            padding: EdgeInsets.symmetric(horizontal: 0, vertical: 20),
-                                                                                    
-                                                            // °°°°°°°°°°°°° CARD MADE UP OF SLIDES WITH AUTO-SWITCH °°°°°°°°°°°°°°°°°
-                                                            child: MediaCarouselCard(
-                                                                title: media.title,
-                                                                height: 400,
-                                                                                    
-                                                                slides: [
-                                                                    // ============= IMAGE ===================
-                                                                    MediaCarouselCardSlide(
-                                                                        heightFactor: 1.0,
-                                                                        content: SizedBox.expand(
-                                                                            child: getAppropriateImageWidget(media), 
-                                                                            // child: Image.file(File(media.imagePath), fit: BoxFit.cover), 
-                                                                        ),    
+                                    child: _lottieAnimator.builder(
+                                        lottieFilePath: "assets/lottie/loading_anim.json",  
+                                        backgroundColor: Theme.of(context).colorScheme.surfaceContainer, 
+                                        backgroundOpacity: .5,
+                                        width: 100, 
+                                        height: 100,
+                    
+                                        child: Container(
+
+                                            decoration: BoxDecoration(
+                                                color: Theme.of(context).colorScheme.surface,
+
+                                                borderRadius: BorderRadius.only(
+                                                    topLeft: Radius.circular(45), 
+                                                    // topRight: Radius.circular(45)
+                                                ),
+                                            ),
+
+                                            child: Padding(
+                                                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
+                                                child: ListView.builder(
+                                                    itemCount: mediaController.mediaList.length,
+                                                    itemBuilder: (context, index) {
+                                                        final media = mediaController.mediaList[index];
+                                                
+                                                        return Stack(
+                                                            children: [
+                                                                InkWell(
+                                                                                            
+                                                                    // °°°°°°°°°°°°° ON MEDIA SELECTED °°°°°°°°°°°°°°°°°
+                                                                    onTap: () => Navigator.of(context).pushNamed(
+                                                                        "/mediaDetails",
+                                                                        arguments: {'media': media,},
                                                                     ),
-                                                                    // ============= END - IMAGE ===================
-                                                                                    
-                                                                    // ================ SYNOPSIS _ RATE _ CURRENT SEASON AND EPISODE ==============
-                                                                    MediaCarouselCardSlide(
-                                                                        heightFactor: 1,
-                                                                        content: Container(
-                                                                                    
-                                                                            padding: const EdgeInsets.only(
-                                                                                left: 10,
-                                                                                top: 10,
-                                                                                right: 10,
-                                                                                bottom: 60,
-                                                                            ),
-                                                                                    
-                                                                            color: Theme.of(context).colorScheme.surfaceContainer,
-                                                                                    
-                                                                            child: Column(
-                                                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                        
-                                                                                children: [
-                                                                                    // ---------- DESCRIPTION -------------
-                                                                                    Text(
-                                                                                        media.description,
-                                                                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                                                            color: Theme.of(context).colorScheme.onSurface,
-                                                                                        ), 
-                                                                                        
-                                                                                        overflow: TextOverflow.ellipsis,
-                                                                                        maxLines: 4,
-                                                                                    ),
-                                                                                    // ---------- END - DESCRIPTION -------------
-                                                                                        
-                                                                                    SizedBox(height: 20),
-                                                    
-                                                                                    // --------------- GENRE ---------------
-                                                                                    if (media.mediaGenre != null)
-                                                                                        Text(
-                                                                                            "Genre: ${media.mediaGenre?.formattedName}",
-                                                                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                                                                color: Theme.of(context).colorScheme.onSurface,
-                                                                                                fontWeight: FontWeight.w600,
-                                                                                            ), 
+                                                                    // °°°°°°°°°°°°° END - ON MEDIA SELECTED °°°°°°°°°°°°°°°°°
+                                                                    
+                                                                    child: Padding(
+                                                                        padding: EdgeInsets.symmetric(horizontal: 0, vertical: 20),
+                                                                                                
+                                                                        // °°°°°°°°°°°°° CARD MADE UP OF SLIDES WITH AUTO-SWITCH °°°°°°°°°°°°°°°°°
+                                                                        child: MediaCarouselCard(
+                                                                            title: media.title,
+                                                                            height: 400,
+                                                                                                
+                                                                            slides: [
+                                                                                // ============= IMAGE ===================
+                                                                                MediaCarouselCardSlide(
+                                                                                    heightFactor: 1.0,
+                                                                                    content: SizedBox.expand(
+                                                                                        child: getAppropriateImageWidget(media), 
+                                                                                        // child: Image.file(File(media.imagePath), fit: BoxFit.cover), 
+                                                                                    ),    
+                                                                                ),
+                                                                                // ============= END - IMAGE ===================
+                                                                                                
+                                                                                // ================ SYNOPSIS _ RATE _ CURRENT SEASON AND EPISODE ==============
+                                                                                MediaCarouselCardSlide(
+                                                                                    heightFactor: 1,
+                                                                                    content: Container(
+                                                                                                
+                                                                                        padding: const EdgeInsets.only(
+                                                                                            left: 10,
+                                                                                            top: 10,
+                                                                                            right: 10,
+                                                                                            bottom: 60,
                                                                                         ),
-                                                                                    // --------------- END - GENRE ---------------
-                                                    
-                                                                                    // --------------- WATCH STATUS ---------------
-                                                                                    if (media.watchStatus != null)
-                                                                                        Text(
-                                                                                            "Status: ${media.watchStatus?.formattedName}",
-                                                                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                                                                color: Theme.of(context).colorScheme.onSurface,
-                                                                                                fontWeight: FontWeight.w600,
-                                                                                            ), 
-                                                                                        ),
-                                                                                    // --------------- END - WATCH STATUS ---------------
-                                                    
-                                                                                    SizedBox(height: 20),
-                                                                                        
-                                                                                    // --------------- RATE ---------------
-                                                                                    Text(
-                                                                                        "Your rating: ${media.rate ?? 'N/A'}",
-                                                                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                                                            color: Theme.of(context).colorScheme.onSurface
-                                                                                        ), 
-                                                                                    ),
-                                                                                    // --------------- END - RATE ---------------
-                                                                                        
-                                                                                    SizedBox(height: 20),
-                                                                                        
-                                                                                    // ---------- CURRENT SEASON AND EPISODE ---------
-                                                                                    if (media.currentSeasonIndex != null || media.currentEpisodeIndex != null)
-                                                                                        Text(
-                                                                                            "Where you are:",
-                                                                                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                                                                                fontSize: 14
-                                                                                            ), 
-                                                                                        ),
-                                                                                        
-                                                                                    // ________ CURENT SEASON
-                                                                                    if (media.currentSeasonIndex != null)
-                                                                                        Text(
-                                                                                            "Season ${media.currentSeasonIndex ?? '--'}",
-                                                                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                                                                color: Theme.of(context).colorScheme.onSurface
-                                                                                            ), 
-                                                                                        ),
-                                                                                    // ________ END - CURENT SEASON
-                                                                                        
-                                                                                    // _________ CURRENT EPISODE 
-                                                                                    if (media.currentEpisodeIndex != null)
-                                                                                        Text(
-                                                                                            "Episode: ${media.currentEpisodeIndex ?? '--'}",
-                                                                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                                                                color: Theme.of(context).colorScheme.onSurface
-                                                                                            ), 
-                                                                                        ),
-                                                                                    // _________ END - CURRENT EPISODE 
-                                                                                        
-                                                                                    // ---------- CURRENT SEASON AND EPISODE ---------
-                                                                                ],
-                                                                            ),
-                                                                        ),    
-                                                                    ),
-                                                                    // ================ END - SYNOPSIS _ RATE _ CURRENT SEASON AND EPISODE ==============
-                                                                ],
-                                                                                    
-                                                                // °°°°°°°°°°°°° END - CARD MADE UP OF SLIDES WITH AUTO-SWITCH °°°°°°°°°°°°°°°°°
-                                                                                    
-                                                                                    
-                                                                // °°°°°°°°°°°°°°°°° EDIT THE MEDIA °°°°°°°°°°°°°°°°°°°°
-                                                                onEdit: () => mediaController.goToEditMedia(context, media),
+                                                                                                
+                                                                                        color: Theme.of(context).colorScheme.surfaceContainer,
+                                                                                                
+                                                                                        child: Column(
+                                                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                                    
+                                                                                            children: [
+                                                                                                // ---------- DESCRIPTION -------------
+                                                                                                Text(
+                                                                                                    media.description,
+                                                                                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                                                                        color: Theme.of(context).colorScheme.onSurface,
+                                                                                                    ), 
+                                                                                                    
+                                                                                                    overflow: TextOverflow.ellipsis,
+                                                                                                    maxLines: 4,
+                                                                                                ),
+                                                                                                // ---------- END - DESCRIPTION -------------
+                                                                                                    
+                                                                                                SizedBox(height: 20),
                                                                 
-                                                                // °°°°°°°°°°°° END - EDIT THE MEDIA °°°°°°°°°°°°°°°°°°°°
-                                                                                    
-                                                                                    
-                                                                // °°°°°°°°°°°°°° DELETE THE MEDIA °°°°°°°°°°°°°°°°°°
-                                                                onDelete: () => mediaController.deleteInList(context, media),
-                                                                // °°°°°°°°°°°° END - DELETE THE MEDIA °°°°°°°°°°°°°°°°°°
-                                                            )
-                                                        )
-                                                    ),
-
-                                                    
-                                                    // °°°°°°°°°°°°°°°°° READ/STOP SYNOPSIS °°°°°°°°°°°°°°°°°
-                                                    Positioned(
-                                                        bottom: 120,
-                                                        right: 15,
-                                                        
-                                                        child: Container(
-                                                            decoration: BoxDecoration(
-                                                                color: Theme.of(context).colorScheme.primary,
-                                                                borderRadius: BorderRadius.circular(100),
-
-                                                                boxShadow: [
-                                                                    BoxShadow(
-                                                                        blurRadius: 1,
-                                                                        offset: Offset(5, 5),
-                                                                        color: Colors.black38,
+                                                                                                // --------------- GENRE ---------------
+                                                                                                if (media.mediaGenre != null)
+                                                                                                    Text(
+                                                                                                        "Genre: ${media.mediaGenre?.formattedName}",
+                                                                                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                                                                            color: Theme.of(context).colorScheme.onSurface,
+                                                                                                            fontWeight: FontWeight.w600,
+                                                                                                        ), 
+                                                                                                    ),
+                                                                                                // --------------- END - GENRE ---------------
+                                                                
+                                                                                                // --------------- WATCH STATUS ---------------
+                                                                                                if (media.watchStatus != null)
+                                                                                                    Text(
+                                                                                                        "Status: ${media.watchStatus?.formattedName}",
+                                                                                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                                                                            color: Theme.of(context).colorScheme.onSurface,
+                                                                                                            fontWeight: FontWeight.w600,
+                                                                                                        ), 
+                                                                                                    ),
+                                                                                                // --------------- END - WATCH STATUS ---------------
+                                                                
+                                                                                                SizedBox(height: 20),
+                                                                                                    
+                                                                                                // --------------- RATE ---------------
+                                                                                                Text(
+                                                                                                    "Your rating: ${media.rate ?? 'N/A'}",
+                                                                                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                                                                        color: Theme.of(context).colorScheme.onSurface
+                                                                                                    ), 
+                                                                                                ),
+                                                                                                // --------------- END - RATE ---------------
+                                                                                                    
+                                                                                                SizedBox(height: 20),
+                                                                                                    
+                                                                                                // ---------- CURRENT SEASON AND EPISODE ---------
+                                                                                                if (media.currentSeasonIndex != null || media.currentEpisodeIndex != null)
+                                                                                                    Text(
+                                                                                                        "Where you are:",
+                                                                                                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                                                                            fontSize: 14
+                                                                                                        ), 
+                                                                                                    ),
+                                                                                                    
+                                                                                                // ________ CURENT SEASON
+                                                                                                if (media.currentSeasonIndex != null)
+                                                                                                    Text(
+                                                                                                        "Season ${media.currentSeasonIndex ?? '--'}",
+                                                                                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                                                                            color: Theme.of(context).colorScheme.onSurface
+                                                                                                        ), 
+                                                                                                    ),
+                                                                                                // ________ END - CURENT SEASON
+                                                                                                    
+                                                                                                // _________ CURRENT EPISODE 
+                                                                                                if (media.currentEpisodeIndex != null)
+                                                                                                    Text(
+                                                                                                        "Episode: ${media.currentEpisodeIndex ?? '--'}",
+                                                                                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                                                                            color: Theme.of(context).colorScheme.onSurface
+                                                                                                        ), 
+                                                                                                    ),
+                                                                                                // _________ END - CURRENT EPISODE 
+                                                                                                    
+                                                                                                // ---------- CURRENT SEASON AND EPISODE ---------
+                                                                                            ],
+                                                                                        ),
+                                                                                    ),    
+                                                                                ),
+                                                                                // ================ END - SYNOPSIS _ RATE _ CURRENT SEASON AND EPISODE ==============
+                                                                            ],
+                                                                                                
+                                                                            // °°°°°°°°°°°°° END - CARD MADE UP OF SLIDES WITH AUTO-SWITCH °°°°°°°°°°°°°°°°°
+                                                                                                
+                                                                                                
+                                                                            // °°°°°°°°°°°°°°°°° EDIT THE MEDIA °°°°°°°°°°°°°°°°°°°°
+                                                                            onEdit: () => mediaController.goToEditMedia(context, media),
+                                                                            
+                                                                            // °°°°°°°°°°°° END - EDIT THE MEDIA °°°°°°°°°°°°°°°°°°°°
+                                                                                                
+                                                                                                
+                                                                            // °°°°°°°°°°°°°° DELETE THE MEDIA °°°°°°°°°°°°°°°°°°
+                                                                            onDelete: () => mediaController.deleteInList(context, media),
+                                                                            // °°°°°°°°°°°° END - DELETE THE MEDIA °°°°°°°°°°°°°°°°°°
+                                                                        )
+                                                                    )
+                                                                ),
+                                                                    
+                                                                
+                                                                // °°°°°°°°°°°°°°°°° READ/STOP SYNOPSIS °°°°°°°°°°°°°°°°°
+                                                                Positioned(
+                                                                    bottom: 120,
+                                                                    right: 15,
+                                                                    
+                                                                    child: Container(
+                                                                        decoration: BoxDecoration(
+                                                                            color: Theme.of(context).colorScheme.primary,
+                                                                            borderRadius: BorderRadius.circular(100),
+                                                                    
+                                                                            boxShadow: [
+                                                                                BoxShadow(
+                                                                                    blurRadius: 1,
+                                                                                    offset: Offset(5, 5),
+                                                                                    color: Colors.black38,
+                                                                                ),
+                                                                            ],
+                                                                        ),
+                                                                    
+                                                                        child: IconButton(
+                                                                        onPressed: () => readOrStopSynopsis(media),
+                                                                    
+                                                                        icon: Icon(
+                                                                            _isReadingStates[media.uniqueId] == true ? 
+                                                                                Icons.stop_rounded : 
+                                                                                Icons.play_arrow_rounded, 
+                                                                    
+                                                                            color: Colors.white,
+                                                                        ),
                                                                     ),
-                                                                ],
-                                                            ),
-
-                                                            child: IconButton(
-                                                            onPressed: () => readOrStopSynopsis(media),
-
-                                                            icon: Icon(
-                                                                _isReadingStates[media.uniqueId] == true ? 
-                                                                    Icons.stop_rounded : 
-                                                                    Icons.play_arrow_rounded, 
-
-                                                                color: Colors.white,
-                                                            ),
-                                                        ),
-                                                    ),
-                                                    )
-                                                    // °°°°°°°°°°°°°°°°° END - READ/STOP SYNOPSIS °°°°°°°°°°°°°°°°°
-                                                ],
-                                            );
-                                      }
+                                                                ),
+                                                                )
+                                                                // °°°°°°°°°°°°°°°°° END - READ/STOP SYNOPSIS °°°°°°°°°°°°°°°°°
+                                                            ],
+                                                        );
+                                                    }
+                                                ),
+                                            ),
+                                        ),
                                     ),
+                                    
                                 ),
-                                
-                            ),
-                                // ::--::::::-::-::--::: END - LIST VIEW ::--::::::-::-::--:::
-                        ],
+                                    // ::--::::::-::-::--::: END - LIST VIEW ::--::::::-::-::--:::
+                            ],
+                        ),
                     ),
                 )
             ),

@@ -54,44 +54,44 @@ class MediaController extends ChangeNotifier {
     
     // %%%%%%%%%%%%%%%%% PROPERTIES %%%%%%%%%%%%%%%%%%%%%
 
-/// 𝐈𝐧𝐢𝐭𝐢𝐚𝐥 𝐥𝐢𝐬𝐭 𝐨𝐟 𝐌𝐞𝐝𝐢𝐚 𝐨𝐛𝐣𝐞𝐜𝐭𝐬
-///
-/// This list stores the original media items as loaded from Hive at
-/// initialization. It remains unchanged by sorting or filtering,
-/// allowing to always restore the initial state if needed.
-List<Media> initialMediaList = [];
+    /// 𝐈𝐧𝐢𝐭𝐢𝐚𝐥 𝐥𝐢𝐬𝐭 𝐨𝐟 𝐌𝐞𝐝𝐢𝐚 𝐨𝐛𝐣𝐞𝐜𝐭𝐬
+    ///
+    /// This list stores the original media items as loaded from Hive at
+    /// initialization. It remains unchanged by sorting or filtering,
+    /// allowing to always restore the initial state if needed.
+    List<Media> initialMediaList = [];
 
-/// 𝐂𝐮𝐫𝐫𝐞𝐧𝐭 𝐥𝐢𝐬𝐭 𝐨𝐟 𝐌𝐞𝐝𝐢𝐚 𝐭𝐡𝐚𝐭 𝐦𝐚𝐲 𝐛𝐞 𝐬𝐨𝐫𝐭𝐞𝐝 𝐨𝐫 𝐟𝐢𝐥𝐭𝐞𝐫𝐞𝐝
-///
-/// This list is the active one bound to the UI. It reflects current
-/// filters, sorting or search results applied by the user.
-List<Media> mediaList = [];
+    /// 𝐂𝐮𝐫𝐫𝐞𝐧𝐭 𝐥𝐢𝐬𝐭 𝐨𝐟 𝐌𝐞𝐝𝐢𝐚 𝐭𝐡𝐚𝐭 𝐦𝐚𝐲 𝐛𝐞 𝐬𝐨𝐫𝐭𝐞𝐝 𝐨𝐫 𝐟𝐢𝐥𝐭𝐞𝐫𝐞𝐝
+    ///
+    /// This list is the active one bound to the UI. It reflects current
+    /// filters, sorting or search results applied by the user.
+    List<Media> mediaList = [];
 
-/// 𝐋𝐢𝐬𝐭 𝐨𝐟 𝐬𝐨𝐫𝐭 𝐛𝐮𝐭𝐭𝐨𝐧 𝐥𝐚𝐛𝐞𝐥𝐬
-///
-/// Defines the sorting criteria available in the UI.
-/// The controller uses the current sort index to determine which
-/// sorting method to apply on mediaList.
-List<String> sortButtons = ["Date", "Title", "Rate"];
+    /// 𝐋𝐢𝐬𝐭 𝐨𝐟 𝐬𝐨𝐫𝐭 𝐛𝐮𝐭𝐭𝐨𝐧 𝐥𝐚𝐛𝐞𝐥𝐬
+    ///
+    /// Defines the sorting criteria available in the UI.
+    /// The controller uses the current sort index to determine which
+    /// sorting method to apply on mediaList.
+    List<String> sortButtons = ["Date", "Title", "Rate"];
 
-/// 𝐂𝐮𝐫𝐫𝐞𝐧𝐭 𝐬𝐨𝐫𝐭 𝐜𝐫𝐢𝐭𝐞𝐫𝐢𝐨 𝐢𝐧𝐝𝐞𝐱
-///
-/// This private integer stores the index of the currently active sort
-/// in the sortButtons list. Used internally to track and toggle sorting.
-int _currentSortIndex = 0;
+    /// 𝐂𝐮𝐫𝐫𝐞𝐧𝐭 𝐬𝐨𝐫𝐭 𝐜𝐫𝐢𝐭𝐞𝐫𝐢𝐨 𝐢𝐧𝐝𝐞𝐱
+    ///
+    /// This public integer stores the index of the currently active sort
+    /// in the sortButtons list. Used to track and toggle sorting.
+    int currentSortIndex = 0;
 
-/// 𝐇𝐢𝐯𝐞 𝐛𝐨𝐱 𝐧𝐚𝐦𝐞
-///
-/// This late-initialized property holds the Hive box name string
-/// that identifies the local database container for media objects.
-/// It must be set externally before calling initialize or any operation
-/// accessing Hive.
-///
-/// Usually provided by the UI or dependency injection when the controller
-/// is created.
-late String hiveBoxName;
+    /// 𝐇𝐢𝐯𝐞 𝐛𝐨𝐱 𝐧𝐚𝐦𝐞
+    ///
+    /// This late-initialized property holds the Hive box name string
+    /// that identifies the local database container for media objects.
+    /// It must be set externally before calling initialize or any operation
+    /// accessing Hive.
+    ///
+    /// Usually provided by the UI or dependency injection when the controller
+    /// is created.
+    late String hiveBoxName;
 
-// %%%%%%%%%%%%%%%%% END - PROPERTIES %%%%%%%%%%%%%%%%%%%%%
+    // %%%%%%%%%%%%%%%%% END - PROPERTIES %%%%%%%%%%%%%%%%%%%%%
 
 
 
@@ -136,10 +136,10 @@ late String hiveBoxName;
         initialMediaList = Hive.box<Media>(hiveBoxName).values.toList();
         mediaList = [...initialMediaList];
 
-        // Sort mediaList by lastModificationDate descending (latest first)
-        mediaList.sort((media1, media2) =>
-            media2.lastModificationDate.compareTo(media1.lastModificationDate)
-        );
+        // Sort mediaList by user last preference
+        final sortIndex = await getCurrentSortIndex();
+        sortBy(sortIndex, sortButtons);
+
 
         // Prepare search indexing on each media object
         for (var media in mediaList) {
@@ -156,6 +156,31 @@ late String hiveBoxName;
         }
     }
     // %%%%%%%%%%%%%%%%%% END - INITIALIZE %%%%%%%%%%%%%%%%%%%
+
+
+
+
+    // %%%%%%%%%%%%%%%%% CHECK FIRST RUN STATUS %%%%%%%%%%%%%%%
+    /// **Get user current sort index**
+    ///
+    /// This synchronous method uses `SharedPreferences` to retrieve user's sort choice.
+    ///
+    /// It reads the sort option index (int) stored under the key `'currentSortIndex'`.
+    ///
+    /// - default value is 0
+    ///
+    /// This method is useful to conserve the previous sort choice even after rerunning the app
+    ///
+    /// Example usage:
+    /// ```dart
+    /// int currentSortIndex = !(await controller.getCurrentSortIndex());
+    /// controller.sortBy(currentSortIndex, sortButtons);
+    /// ```
+    Future<int> getCurrentSortIndex() async {
+        final prefs = await SharedPreferences.getInstance();
+        return prefs.getInt('currentSortIndex') ?? 0;
+    }
+    // %%%%%%%%%%%%%%%%% END - CHECK FIRST RUN STATUS %%%%%%%%%%%%%%%
 
 
 
@@ -191,7 +216,6 @@ late String hiveBoxName;
         return hasAlreadyLaunched;
     }
     // %%%%%%%%%%%%%%%%% END - CHECK FIRST RUN STATUS %%%%%%%%%%%%%%%
-
 
 
 
@@ -504,17 +528,21 @@ late String hiveBoxName;
     /// ```dart
     /// controller.sortBy(1, ["Date", "Title", "Rate"]);
     /// ```
-    void sortBy (int index, List<String> buttons) {
+    Future<void> sortBy (int index, List<String> buttons) async {
         
         if (buttons.isEmpty || index >= buttons.length) return;
 
-        _currentSortIndex = index;
+        currentSortIndex = index;
         var selectedSortOption = buttons[index].toLowerCase();
+
+        // Save in preferences
+        final prefs = await SharedPreferences.getInstance();
+        prefs.setInt('currentSortIndex', index);
 
         // Sort by Date descending
         if (selectedSortOption == "date") {
             mediaList.sort((media1, media2) => 
-                media2.lastModificationDate.compareTo(media1.lastModificationDate)
+                media2.creationDate.compareTo(media1.creationDate)
             );
         }
 
@@ -714,7 +742,7 @@ late String hiveBoxName;
         if (done) {
             initialMediaList.add(media);
             mediaList = [...initialMediaList];
-            sortBy(_currentSortIndex, sortButtons); // notifyListeners() is inside sortBy
+            sortBy(currentSortIndex, sortButtons); // notifyListeners() is inside sortBy
             notifyListeners();
         }
         return done;
@@ -742,7 +770,7 @@ late String hiveBoxName;
     /// Behavior:
     /// - If the media exists in `initialMediaList` (matched by `uniqueId`), it is replaced by the new one.
     /// - The visible `mediaList` is reset to the full updated list.
-    /// - Sorting is reapplied using the current sorting index (`_currentSortIndex`).
+    /// - Sorting is reapplied using the current sorting index (`currentSortIndex`).
     /// - `notifyListeners()` is called within `sortBy()` to update the UI.
     ///
     /// Usage example:
@@ -768,7 +796,7 @@ late String hiveBoxName;
             if (mediaIndex != -1) {
                 initialMediaList[mediaIndex] = media;  
                 mediaList = [...initialMediaList];
-                sortBy(_currentSortIndex, sortButtons); // notifyListeners() is inside sortBy()
+                sortBy(currentSortIndex, sortButtons); // notifyListeners() is inside sortBy()
             } 
         }  
         return done; 

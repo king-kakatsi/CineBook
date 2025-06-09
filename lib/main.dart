@@ -1,11 +1,12 @@
 import 'package:first_project/themes/app_theme.dart';
-import 'package:first_project/themes/theme_viewmodel.dart';
+import 'package:first_project/controllers/theme_controller.dart';
 import 'package:first_project/models/media.dart';
 import 'package:first_project/pages/media_details_page.dart';
 import 'package:first_project/pages/media_edit_page.dart';
 import 'package:first_project/controllers/media_controller.dart';
 import 'package:first_project/pages/root_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
@@ -26,7 +27,14 @@ import 'package:provider/provider.dart';
 void main() async {
 
     WidgetsFlutterBinding.ensureInitialized();
+    // Allow only portrait mode
+    await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp,]);
     initGetIt();
+
+    // init the theme with user preferences
+    final themeController = GetIt.instance<ThemeController>();
+    await themeController.init();
+
     await initHive();
     runApp(AppRoot());
 }
@@ -41,17 +49,17 @@ void main() async {
     /// 
     /// Registered services:
     /// - MediaController: Manages media data operations and state
-    /// - ThemeViewModel: Handles theme switching and persistence
+    /// - ThemeController: Handles theme switching and persistence
     /// 
     /// Example usage:
     /// ```dart
     /// final mediaController = GetIt.instance<MediaController>();
-    /// final themeViewModel = GetIt.instance<ThemeViewModel>();
+    /// final themeViewModel = GetIt.instance<ThemeController>();
     /// ```
     void initGetIt() {
         final getIt = GetIt.instance;
         getIt.registerSingleton<MediaController>(MediaController());
-        getIt.registerSingleton<ThemeViewModel>(ThemeViewModel());
+        getIt.registerSingleton<ThemeController>(ThemeController());
     }
     // %%%%%%%%%%%%%%%%%%%%%%%% END - INITIALIZE DEPENDENCY INJECTION %%%%%%%%%%%%%%%%%%
 
@@ -117,7 +125,7 @@ void main() async {
 /// 
 /// This widget configures:
 /// - MediaController provider for media data management
-/// - ThemeViewModel provider for theme state management
+/// - ThemeController provider for theme state management
 /// 
 /// All child widgets can access these providers using context.watch<T>() or context.read<T>().
 class AppRoot extends StatelessWidget {
@@ -133,8 +141,8 @@ class AppRoot extends StatelessWidget {
             providers: [
                 // Provide MediaController singleton for media data operations
                 ChangeNotifierProvider<MediaController>.value(value: getIt<MediaController>()),
-                // Provide ThemeViewModel singleton for theme management
-                ChangeNotifierProvider<ThemeViewModel>.value(value: getIt<ThemeViewModel>()),
+                // Provide ThemeController singleton for theme management
+                ChangeNotifierProvider<ThemeController>.value(value: getIt<ThemeController>()),
             ],
 
             child: MyApp(),
@@ -155,7 +163,7 @@ class AppRoot extends StatelessWidget {
 /// - Global app settings and configuration
 /// 
 /// Features:
-/// - Dynamic theme switching via ThemeViewModel
+/// - Dynamic theme switching via ThemeController
 /// - Named route navigation system
 /// - Arguments passing between routes
 /// - Debug banner disabled for production-ready appearance
@@ -172,8 +180,8 @@ class MyApp extends StatelessWidget {
             title: 'CineBook App',
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
-            // Watch ThemeViewModel for dynamic theme switching
-            themeMode: context.watch<ThemeViewModel>().themeMode,
+            // Watch ThemeController for dynamic theme switching
+            themeMode: context.watch<ThemeController>().themeMode,
             
 
             // ooooooooooooooooooo ROUTES ooooooooooooooooooooo
